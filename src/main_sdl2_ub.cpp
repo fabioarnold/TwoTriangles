@@ -238,4 +238,6 @@ int main(int argc, char *argv[]) {
 
 	ImGui_ImplSdlGL2_Shutdown();
 	quitSDL();
+
+	return 0;
 }
