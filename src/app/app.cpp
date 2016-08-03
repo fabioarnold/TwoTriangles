@@ -54,6 +54,7 @@ void App::transferUniformData(ShaderUniform *old_uniforms, int old_uniform_count
 
 static const char *uniformdata_ext = ".uniformdata";
 void App::readUniformData() {
+	if (!file_path) return;
 	size_t uniform_file_path_len = strlen(file_path)+strlen(uniformdata_ext);
 	char *uniform_file_path = new char[uniform_file_path_len+1];
 	strcpy(uniform_file_path, file_path);
@@ -90,6 +91,7 @@ void App::readUniformData() {
 }
 
 void App::writeUniformData() {
+	if (!file_path) return;
 	size_t uniform_file_path_len = strlen(file_path)+strlen(uniformdata_ext);
 	char *uniform_file_path = new char[uniform_file_path_len+1];
 	strcpy(uniform_file_path, file_path);
