@@ -1,0 +1,12 @@
+[submodule "lib/gamelib"]
+	path = lib/gamelib
+	url = https://github.com/fabioarnold/gamelib.git
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/fabioarnold/imgui.git
+[submodule "lib/nativefiledialog"]
+	path = lib/nativefiledialog
+	url = https://github.com/mlabbe/nativefiledialog.git
+[submodule "lib/stb"]
+	path = lib/stb
+	url = https://github.com/fabioarnold/stb.git
