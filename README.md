@@ -31,7 +31,7 @@ Install dependencies using pacman:
 Clone repository and submodules:
 
 ```
-$ git clone --recursive https://github.com/fabioarnold/TwoTriangles.git`
+$ git clone --recursive https://github.com/fabioarnold/TwoTriangles.git
 $ cd TwoTriangles
 ```
 
