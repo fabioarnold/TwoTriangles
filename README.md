@@ -23,7 +23,7 @@ $ brew install scons pkg-config sdl2
 Install dependencies using pacman:
 
 ```
-# pacman -S base-devel scons pkg-config sdl2
+# pacman -S base-devel scons pkg-config glew sdl2
 ```
 
 ## Build and run
