@@ -361,6 +361,10 @@ void App::update(float delta_time) {
 					readUniformData();
 				}
 				for (int i = 0; i < uniform_count; i++) {
+					// skip builtin uniforms
+					if (!strcmp(u_time_name,       uniforms[i].name)) continue;
+					if (!strcmp(u_resolution_name, uniforms[i].name)) continue;
+					if (!strcmp(u_view_mat_name,   uniforms[i].name)) continue;
 					uniforms[i].gui();
 				}
 			}
