@@ -5,8 +5,12 @@ OS_NAME="$(uname -s)"
 TARGET="twotris"
 
 DEBUG_FLAGS="-O0 -g -DDEBUG"
-RELEASE_FLAGS="-O2"
-CFLAGS="$CFLAGS -std=c++11 $DEBUG_FLAGS"
+RELEASE_FLAGS="-Os"
+if [[ $1 = "release" ]]; then
+	CFLAGS="$CFLAGS -std=c++11 $RELEASE_FLAGS"
+else
+	CFLAGS="$CFLAGS -std=c++11 $DEBUG_FLAGS"
+fi
 
 # gamelib
 INCLUDE_DIRS="-Ilib/gamelib/src"
