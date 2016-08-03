@@ -40,10 +40,11 @@ Build the third party libraries:
 ```
 $ cd lib/imgui
 $ sh build_staticlib.sh
-$ cd ../lib/stb
+$ cd ../stb
 $ sh build_staticlib.sh
-$ cd ../lib/nativefiledialog/src
+$ cd ../nativefiledialog/src
 $ scons debug=0
+$ cd ../../..
 $ cd -
 ```
 
