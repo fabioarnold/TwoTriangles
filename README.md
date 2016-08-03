@@ -10,23 +10,30 @@ This app simply draws two (shaded) triangles, which is basically a native offlin
 * Built-in 3D camera with keyboard controls (WASD for moving, arrow keys for looking around)
 * Load textures, cubemaps and HDR images
 
-## Install dependencies
+## Installing
 
-### OS X
+### Arch Linux
+You can obtain a package from the AUR: https://aur.archlinux.org/packages/twotris-git
+
+## Building from source
+
+### Install dependencies
+
+#### OS X
 Assuming you already have Xcode install dependencies using [Homebrew](http://brew.sh):
 
 ```
 $ brew install scons pkg-config sdl2
 ```
 
-### Arch Linux
+#### Arch Linux
 Install dependencies using pacman:
 
 ```
 # pacman -S base-devel scons pkg-config glew sdl2
 ```
 
-## Build and run
+### Build and run
 
 Clone repository and submodules:
 
@@ -45,7 +52,6 @@ $ sh build_staticlib.sh
 $ cd ../nativefiledialog/src
 $ scons debug=0
 $ cd ../../..
-$ cd -
 ```
 
 Build and run TwoTriangles: `sh build.sh run`
