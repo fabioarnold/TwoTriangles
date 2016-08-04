@@ -15,8 +15,8 @@ fi
 # gamelib
 INCLUDE_DIRS="-Ilib/gamelib/src"
 
-# SDL2 and SDL2_net
-LIB_SDL2="`pkg-config --libs sdl2 SDL2_net`"
+# SDL2
+LIB_SDL2="`pkg-config --libs sdl2`"
 
 # OpenGL and Windowing
 LIB_OPENGL="-lGL -lGLEW"
