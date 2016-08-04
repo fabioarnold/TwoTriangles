@@ -12,6 +12,9 @@ This app simply draws two (shaded) triangles, which is basically a native offlin
 
 ## Installing
 
+### Windows
+You can find a Windows build on the releases page: https://github.com/fabioarnold/TwoTriangles/releases
+
 ### Arch Linux
 You can obtain a package from the AUR: https://aur.archlinux.org/packages/twotris-git
 
@@ -20,7 +23,7 @@ You can obtain a package from the AUR: https://aur.archlinux.org/packages/twotri
 ### Install dependencies
 
 #### OS X
-Assuming you already have Xcode install dependencies using [Homebrew](http://brew.sh):
+Assuming you already have Xcode installed install dependencies using [Homebrew](http://brew.sh):
 
 ```
 $ brew install scons pkg-config sdl2
