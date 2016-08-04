@@ -55,3 +55,8 @@ $ cd ../../..
 ```
 
 Build and run TwoTriangles: `sh build.sh run`
+
+## Credits
+* [dear imgui](https://github.com/ocornut/imgui) by Omar Cornut
+* [Native File Dialog](https://github.com/mlabbe/nativefiledialog) by Michael Labbe
+* [Sean's Tool Box](https://github.com/nothings/stb) by Sean T. Barrett
