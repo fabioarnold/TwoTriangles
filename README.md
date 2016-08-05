@@ -22,8 +22,11 @@ You can obtain a package from the AUR: https://aur.archlinux.org/packages/twotri
 
 ### Install dependencies
 
+#### Windows
+You need [Visual Studio 2015](https://www.visualstudio.com).
+
 #### OS X
-Assuming you already have Xcode installed install dependencies using [Homebrew](http://brew.sh):
+Assuming you already have Xcode installed, install dependencies using [Homebrew](http://brew.sh):
 
 ```
 $ brew install scons pkg-config sdl2
@@ -36,7 +39,7 @@ Install dependencies using pacman:
 # pacman -S base-devel scons pkg-config glew sdl2
 ```
 
-### Build and run on OS X and Linux
+### Get the code
 
 Clone repository and submodules:
 
@@ -45,7 +48,15 @@ $ git clone --recursive https://github.com/fabioarnold/TwoTriangles.git
 $ cd TwoTriangles
 ```
 
+### Build and run
+
+#### OS X and Arch Linux
+
 Build and run TwoTriangles: `sh build.sh run`
+
+#### Windows
+
+Open projects/visualstudio/TwoTriangles.sln in Visual Studio 2015 and the change the configuration from Debug to Release (I only configured Release x64 for now). Build the solution and place SDL.dll and glew32.dll, which you can find in the lib directory, in your target folder (e.g. projects/visualstudio/x64/Release). You should be able to run the program now.
 
 ## Credits
 * [dear imgui](https://github.com/ocornut/imgui) by Omar Cornut
