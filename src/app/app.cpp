@@ -25,6 +25,8 @@ void App::parseUniforms() {
 			&uniform_name_len, &uniform->size, &uniform->type, uniform->name);
 		uniform->location = shader.getUniformLocation(uniform->name);
 		uniform_data_size += uniform->getSize();
+
+		if (strstr(uniform->name, "color")) uniform->flags |= SUF_IS_COLOR;
 	}
 	uniform_data = new u8[uniform_data_size];
 	memset(uniform_data, 0, uniform_data_size);
@@ -53,6 +55,8 @@ void App::transferUniformData(ShaderUniform *old_uniforms, int old_uniform_count
 }
 
 static const char *uniformdata_ext = ".uniformdata";
+static const char *uniformdata_fourcc = "UDAT";
+static const u32 uniformdata_version = 1;
 void App::readUniformData() {
 	if (!file_path) return;
 	size_t uniform_file_path_len = strlen(file_path)+strlen(uniformdata_ext);
@@ -63,6 +67,13 @@ void App::readUniformData() {
 	FILE *file = fopen(uniform_file_path, "rb");
 	delete [] uniform_file_path;
 	if (!file) return;
+
+	u32 fourcc;  fread(&fourcc,  sizeof(u32), 1, file);
+	u32 version; fread(&version, sizeof(u32), 1, file);
+	if (fourcc != *((u32*)uniformdata_fourcc) || version != uniformdata_version) {
+		LOGE("Not a valid uniformdata file: %s %d %d", uniform_file_path, *((u32*)uniformdata_fourcc), fourcc);
+		return;
+	}
 
 	int loaded_uniform_count;
 	ShaderUniform *loaded_uniforms;
@@ -106,6 +117,8 @@ void App::writeUniformData() {
 		uniforms[ui].data = (u8*)((intptr_t)uniforms[ui].data - (intptr_t)uniform_data);
 	}
 
+	fwrite(uniformdata_fourcc, sizeof(char), 4, file);
+	fwrite(&uniformdata_version, sizeof(u32), 1, file);
 	fwrite(&uniform_count, sizeof(int), 1, file);
 	fwrite(&uniform_data_size, sizeof(size_t), 1, file);
 	fwrite(uniforms, sizeof(ShaderUniform), uniform_count, file);
