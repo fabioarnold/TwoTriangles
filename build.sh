@@ -4,6 +4,14 @@ OS_NAME="$(uname -s)"
 
 TARGET="twotris"
 
+if [[ $1 = "clean" ]]; then
+	rm -r build
+	pushd lib/nativefiledialog/src > /dev/null
+	scons -c
+	popd > /dev/null
+	exit 0
+fi
+
 DEBUG_FLAGS="-O0 -g -DDEBUG"
 RELEASE_FLAGS="-Os"
 if [[ $1 = "release" ]]; then
