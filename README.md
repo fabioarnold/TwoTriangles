@@ -36,25 +36,13 @@ Install dependencies using pacman:
 # pacman -S base-devel scons pkg-config glew sdl2
 ```
 
-### Build and run
+### Build and run on OS X and Linux
 
 Clone repository and submodules:
 
 ```
 $ git clone --recursive https://github.com/fabioarnold/TwoTriangles.git
 $ cd TwoTriangles
-```
-
-Build the third party libraries:
-
-```
-$ cd lib/imgui
-$ sh build_staticlib.sh
-$ cd ../stb
-$ sh build_staticlib.sh
-$ cd ../nativefiledialog/src
-$ scons debug=0
-$ cd ../../..
 ```
 
 Build and run TwoTriangles: `sh build.sh run`
