@@ -173,7 +173,19 @@ void mainLoop() {
 			app->quit = true;
 			break;
 		case SDL_KEYDOWN:
-			app->quit = app->quit || sdl_event.key.keysym.sym == SDLK_ESCAPE;
+			if (app->hide_gui || !ImGui::GetIO().WantCaptureKeyboard) {
+				app->quit = app->quit || sdl_event.key.keysym.sym == SDLK_ESCAPE;
+				if (sdl_event.key.keysym.sym == SDLK_F11) {
+					// toggle fullscreen
+					u32 fullscreen_flag = SDL_GetWindowFlags(sdl_window)&SDL_WINDOW_FULLSCREEN_DESKTOP;
+					SDL_SetWindowFullscreen(sdl_window,
+						fullscreen_flag ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+				}
+				if (sdl_event.key.keysym.sym == SDLK_h) {
+					// toggle imgui
+					app->hide_gui = !app->hide_gui;
+				}
+			}
 			break;
 		}
 	}
@@ -197,7 +209,7 @@ void mainLoop() {
 		- (key_state[SDL_SCANCODE_LEFT ] == SDL_PRESSED ? 1.0f : 0.0f)
 		+ (key_state[SDL_SCANCODE_RIGHT] == SDL_PRESSED ? 1.0f : 0.0f));
 
-	if (ImGui::GetIO().WantCaptureKeyboard) { // null movement
+	if (!app->hide_gui && ImGui::GetIO().WantCaptureKeyboard) { // null movement
 		app->movement_command.move = v3(0.0f);
 		app->movement_command.rotate = v2(0.0f);
 	}
@@ -207,6 +219,7 @@ void mainLoop() {
 	app->update((float)frametime.smoothed_frame_time);
 
 	ImGui::Render();
+
 	SDL_GL_SwapWindow(sdl_window);
 	frametime.update();
 }

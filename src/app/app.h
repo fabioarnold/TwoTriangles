@@ -14,6 +14,7 @@ struct TextureSlot {
 
 struct App {
 	bool quit = false;
+	bool hide_gui = false;
 	VideoMode video;
 	Camera camera;
 
@@ -54,4 +55,5 @@ private:
 	
 	void openShaderDialog();
 	void openImageDialog(TextureSlot *texture_slot, bool load_cube_cross=false);
+	void gui();
 };

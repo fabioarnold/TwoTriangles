@@ -295,14 +295,12 @@ struct BindArrayBuffer {
 	~BindArrayBuffer() {glBindBuffer(GL_ARRAY_BUFFER, 0);}
 };
 
-void App::update(float delta_time) {
-	if (anim_play) frame_count++;
+// builtin uniform names
+static char u_time_name[64]       = "u_time";
+static char u_resolution_name[64] = "u_resolution";
+static char u_view_mat_name[64]   = "u_view_mat";
 
-	// builtin uniform names
-	static char u_time_name[64]       = "u_time";
-	static char u_resolution_name[64] = "u_resolution";
-	static char u_view_mat_name[64]   = "u_view_mat";
-
+void App::gui() {
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Open fragment shader"/*, "Ctrl+O"*/)) {
@@ -412,19 +410,6 @@ void App::update(float delta_time) {
 		ImGui::End();
 	}
 
-	//ImGui::ShowTestWindow();
-
-	// autoreload (every 60 frames)
-	if (file_path && file_autoreload && (frame_count % 60) == 0) {
-		struct stat attr;
-		if (!stat(file_path, &attr)) { // file exists
-			if (attr.st_mtime > file_mod_time) { // file has been modified
-				file_mod_time = attr.st_mtime;
-				loadShader(file_path, /*initial*/false);
-			}
-		}
-	}
-
 	// overlay messages
 	int overlay_flags = ImGuiWindowFlags_NoTitleBar
 		| ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize
@@ -446,6 +431,23 @@ void App::update(float delta_time) {
 		ImGui::Begin("Overlay", nullptr, ImVec2(0, 0), 0.3f, overlay_flags);
 		ImGui::TextUnformatted(compile_error_log);
 		ImGui::End();
+	}
+}
+
+void App::update(float delta_time) {
+	if (anim_play) frame_count++;
+
+	if (!hide_gui) gui();
+
+	// autoreload frag shader (every 60 frames)
+	if (file_path && file_autoreload && (frame_count % 60) == 0) {
+		struct stat attr;
+		if (!stat(file_path, &attr)) { // file exists
+			if (attr.st_mtime > file_mod_time) { // file has been modified
+				file_mod_time = attr.st_mtime;
+				loadShader(file_path, /*initial*/false);
+			}
+		}
 	}
 
 	// update camera
