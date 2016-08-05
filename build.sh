@@ -11,6 +11,7 @@ if [[ $1 = "release" ]]; then
 else
 	CFLAGS="$CFLAGS -std=c++11 $DEBUG_FLAGS"
 fi
+LDFLAGS="-Lbuild"
 
 # gamelib
 INCLUDE_DIRS="-Ilib/gamelib/src"
@@ -21,18 +22,38 @@ LIB_SDL2="`pkg-config --libs sdl2`"
 # OpenGL and Windowing
 LIB_OPENGL="-lGL -lGLEW"
 
-# imgui
-INCLUDE_DIRS="$INCLUDE_DIRS -Ilib/imgui"
-LIB_IMGUI="-Llib/imgui/build -lImGui"
+# dear imgui
+INCLUDE_DIRS="$INCLUDE_DIRS -Ilib/imgui -Ilib/gamelib/third_party/imgui"
+LIB_IMGUI="-lImGui"
+if [ ! -f build/libImGui.a ]; then
+	echo "building dear imgui..."
+	sh build_imgui.sh
+	if [ $? = 1 ]; then
+		exit 1
+	fi
+fi
 
 # nativefiledialog
 INCLUDE_DIRS="$INCLUDE_DIRS -Ilib/nativefiledialog/src/include"
 LIB_NFD="-Llib/nativefiledialog/src -lnfd"
+if [ ! -f lib/nativefiledialog/src/libnfd.a ]; then
+	echo "building nativefiledialog..."
+	pushd lib/nativefiledialog/src > /dev/null
+	scons debug=0
+	popd > /dev/null
+fi
 
 # stb_image
 INCLUDE_DIRS="$INCLUDE_DIRS -Ilib/stb"
-LIB_STB_IMAGE="-Llib/stb/build -lstb_image"
+LIB_STB_IMAGE="-lstb_image"
 CFLAGS="$CFLAGS -DUSE_STB_IMAGE"
+if [ ! -f build/libstb_image.a ]; then
+	echo "building stb_image..."
+	sh build_stb_image.sh
+	if [ $? = 1 ]; then
+		exit 1
+	fi
+fi
 
 # platform specific flags
 if [[ $OS_NAME == "Darwin" ]]; then
@@ -50,8 +71,10 @@ LDFLAGS="$LDFLAGS $LIB_SDL2 $LIB_OPENGL $LIB_IMGUI $LIB_NFD $LIB_STB_IMAGE"
 if [ ! -d "build" ]; then
 	mkdir build
 fi
+
 c++ $CFLAGS src/main_sdl2_ub.cpp $LDFLAGS -o build/$TARGET
 EXIT_STATUS=$?
 if [[ $EXIT_STATUS = 0 && $1 = "run" ]]; then
 	./build/$TARGET
 fi
+

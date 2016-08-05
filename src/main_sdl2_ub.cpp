@@ -25,7 +25,7 @@ SDL_GLContext sdl_gl_context;
 
 // ImGui
 #include <imgui.h>
-#include <examples/sdl_opengl2_example/imgui_impl_sdl_gl2.h> // the impl we want to use
+#include "imgui_impl_sdl2_gl2.h" // the impl we want to use
 
 // nativfiledialog
 #include <nfd.h>
