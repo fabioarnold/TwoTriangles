@@ -6,9 +6,7 @@ DEBUG_FLAGS="-O0 -g"
 RELEASE_FLAGS="-O2"
 CFLAGS="$CFLAGS $INCLUDE_DIRS $RELEASE_FLAGS"
 
-if [ ! -d "build" ]; then
-	mkdir build
-fi
+mkdir -p build
 cc $CFLAGS -c ${UNITYBUILD_CPP_FILE} -o ${UNITYBUILD_CPP_FILE}.o
 EXIT_STATUS=$?
 if [ $EXIT_STATUS = 0 ]; then

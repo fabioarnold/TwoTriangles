@@ -64,10 +64,10 @@ if [ ! -f build/libstb_image.a ]; then
 fi
 
 # platform specific flags
-if [[ $OS_NAME == "Darwin" ]]; then
+if [[ $OS_NAME = "Darwin" ]]; then
 	LIB_OPENGL="-framework OpenGL -framework Cocoa"
 	LIB_NFD="$LIB_NFD -framework AppKit"
-elif [[ $OS_NAME == "Linux" ]]; then
+elif [[ $OS_NAME = "Linux" ]]; then
 	CFLAGS="$CFLAGS -DLINUX_DESKTOP"
 	LIB_NFD="$LIB_NFD `pkg-config --cflags --libs gtk+-3.0`"
 fi
@@ -76,10 +76,7 @@ fi
 CFLAGS="$CFLAGS `pkg-config --cflags sdl2` $INCLUDE_DIRS"
 LDFLAGS="$LDFLAGS $LIB_SDL2 $LIB_OPENGL $LIB_IMGUI $LIB_NFD $LIB_STB_IMAGE"
 
-if [ ! -d "build" ]; then
-	mkdir build
-fi
-
+mkdir -p build
 c++ $CFLAGS src/main_sdl2_ub.cpp $LDFLAGS -o build/$TARGET
 EXIT_STATUS=$?
 if [[ $EXIT_STATUS = 0 && $1 = "run" ]]; then
