@@ -24,6 +24,11 @@ struct App {
 	int file_mod_time = 0;
 	bool file_autoreload = true;
 
+	// As far as I understand ImGui::InputTextMultiline doesn't allow
+	// for reallocating the text buffer during a callback.
+	// That's why I go for a static size
+	char src_edit_buffer[16 << 10] = {0}; // 16 KiB
+
 	Shader shader;
 	char *compile_error_log = nullptr;
 	ShaderUniform *uniforms = nullptr;
@@ -41,6 +46,7 @@ struct App {
 	
 	bool show_uniforms_window = false;
 	bool show_textures_window = false;
+	bool show_src_edit_window = false;
 
 	void init();
 	void update(float delta_time);
@@ -54,6 +60,7 @@ private:
 	void loadShader(const char *frag_file_path, bool initial);
 	
 	void openShaderDialog();
+	void saveShaderDialog();
 	void openImageDialog(TextureSlot *texture_slot, bool load_cube_cross=false);
 	void gui();
 };

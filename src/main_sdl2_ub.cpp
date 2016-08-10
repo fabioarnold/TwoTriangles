@@ -77,7 +77,10 @@ SDL_GLContext sdl_gl_context;
 
 /* inits sdl and creates an opengl window */
 static void initSDL(VideoMode *video) {
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0) {
+		LOGE("Failed to init SDL2: %s", SDL_GetError());
+		exit(1);
+	}
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
@@ -107,13 +110,13 @@ static void initSDL(VideoMode *video) {
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		video->width, video->height, window_flags);
 	if (!sdl_window) {
-		LOGE("Failed to create an OpenGL Window.");
+		LOGE("Failed to create an OpenGL window: %s", SDL_GetError());
 		exit(1);
 	}
 
 	sdl_gl_context = SDL_GL_CreateContext(sdl_window);
 	if (!sdl_gl_context) {
-		LOGE("Failed to create an OpenGL Context.");
+		LOGE("Failed to create an OpenGL context: %s", SDL_GetError());
 		exit(1);
 	}
 
@@ -175,16 +178,16 @@ void mainLoop() {
 		case SDL_KEYDOWN:
 			if (app->hide_gui || !ImGui::GetIO().WantCaptureKeyboard) {
 				app->quit = app->quit || sdl_event.key.keysym.sym == SDLK_ESCAPE;
-				if (sdl_event.key.keysym.sym == SDLK_F11) {
-					// toggle fullscreen
-					u32 fullscreen_flag = SDL_GetWindowFlags(sdl_window)&SDL_WINDOW_FULLSCREEN_DESKTOP;
-					SDL_SetWindowFullscreen(sdl_window,
-						fullscreen_flag ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
-				}
 				if (sdl_event.key.keysym.sym == SDLK_h) {
 					// toggle imgui
 					app->hide_gui = !app->hide_gui;
 				}
+			}
+			if (sdl_event.key.keysym.sym == SDLK_F11) {
+				// toggle fullscreen
+				u32 fullscreen_flag = SDL_GetWindowFlags(sdl_window)&SDL_WINDOW_FULLSCREEN_DESKTOP;
+				SDL_SetWindowFullscreen(sdl_window,
+					fullscreen_flag ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
 			}
 			break;
 		}

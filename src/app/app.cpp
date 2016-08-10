@@ -147,8 +147,15 @@ void App::loadShader(const char *frag_file_path, bool initial) {
 		compile_error_log = nullptr;
 	}
 
+	char *shader_src = readStringFromFile(frag_file_path);
+	if (!shader_src) return; // couldn't read from file
+	// copy src into editor buffer
+	strncpy(src_edit_buffer, shader_src, sizeof(src_edit_buffer));
+
 	// compile newly loaded shader
-	bool is_compiled = shader.readCompileAndAttach(GL_FRAGMENT_SHADER, frag_file_path);
+	bool is_compiled = shader.compileAndAttach(GL_FRAGMENT_SHADER, shader_src);
+	delete [] shader_src;
+
 	if (!is_compiled) {
 		compile_error_log = shader.getShaderCompileErrorLog(GL_FRAGMENT_SHADER);
 		assert(compile_error_log); // should be logically eq. to !is_compiled
@@ -194,6 +201,23 @@ void App::openShaderDialog() {
 		if (!stat(file_path, &attr)) { // file exists
 			file_mod_time = attr.st_mtime;
 			loadShader(file_path, /*initial*/true);
+		}
+	}
+}
+
+void App::saveShaderDialog() {
+	char *out_file_path = nullptr;
+	nfdresult_t result = NFD_SaveDialog("frag,glsl,fsh,txt", nullptr, &out_file_path);
+	SDL_RaiseWindow(sdl_window); // workaround: focus window again after dialog closes
+
+	if (result == NFD_OKAY) {
+		if (file_path) free(file_path);
+		file_path = out_file_path;
+
+		writeStringToFile(file_path, src_edit_buffer);
+		struct stat attr;
+		if (!stat(file_path, &attr)) { // file exists
+			file_mod_time = 0; // force autoreload
 		}
 	}
 }
@@ -298,34 +322,37 @@ void App::init() {
 #endif
 }
 
-struct BindShader {
-	BindShader(Shader &shader) {shader.use();}
-	~BindShader() {glUseProgram(0);}
-};
-
-struct BindArrayBuffer {
-	BindArrayBuffer(GLuint buffer) {glBindBuffer(GL_ARRAY_BUFFER, buffer);}
-	~BindArrayBuffer() {glBindBuffer(GL_ARRAY_BUFFER, 0);}
-};
-
 // builtin uniform names
 static char u_time_name[64]       = "u_time";
 static char u_resolution_name[64] = "u_resolution";
 static char u_view_mat_name[64]   = "u_view_mat";
 
 void App::gui() {
+	ImGuiIO& io = ImGui::GetIO();
+
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
-			if (ImGui::MenuItem("Open fragment shader"/*, "Ctrl+O"*/)) {
+			if (ImGui::MenuItem("Open fragment shader", io.OSXBehaviors ? "Cmd+O" : "Ctrl+O")) {
 				openShaderDialog();
+			}
+			if (ImGui::MenuItem("Save fragment shader", io.OSXBehaviors ? "Cmd+S" : "Ctrl+S", false, !!file_path)) {
+				writeStringToFile(file_path, src_edit_buffer);
 			}
 			if (ImGui::IsItemHovered() && file_path) {
 				ImGui::SetTooltip("%s", file_path);
 			}
+			if (ImGui::MenuItem("Save fragment shader as...", io.OSXBehaviors ? "Cmd+Shift+S" : "Ctrl+Shift+S", false, !!src_edit_buffer[0])) {
+				saveShaderDialog();
+			}
+			// TODO: move this to settings eventually
 			if (ImGui::MenuItem("Autoreload", nullptr, file_autoreload)) {
 				file_autoreload = !file_autoreload;
 			}
-			ImGui::EndMenu();
+			ImGui::Separator();
+			if (ImGui::MenuItem("Quit", "Esc")) {
+				quit = true;
+			}
+ 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Animation")) {
 			if (ImGui::MenuItem(anim_play ? "Pause" : "Play")) {
@@ -342,6 +369,10 @@ void App::gui() {
 			}
 			if (ImGui::MenuItem("Textures", nullptr, show_textures_window)) {
 				show_textures_window = !show_textures_window;
+			}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Source editor", nullptr, show_src_edit_window)) {
+				show_src_edit_window = !show_src_edit_window;
 			}
 			ImGui::EndMenu();
 		}
@@ -423,6 +454,15 @@ void App::gui() {
 		ImGui::End();
 	}
 
+	if (show_src_edit_window) {
+		if (ImGui::Begin("Source editor", &show_src_edit_window)) {
+			// TODO: add horizontal scrollbar
+			ImGui::InputTextMultiline("##Text buffer", src_edit_buffer, sizeof(src_edit_buffer),
+				/*fullwidth, fullheight*/ImVec2(-1.0f, -1.0f), ImGuiInputTextFlags_AllowTabInput);
+		}
+		ImGui::End();
+	}
+
 	// overlay messages
 	int overlay_flags = ImGuiWindowFlags_NoTitleBar
 		| ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize
@@ -446,6 +486,16 @@ void App::gui() {
 		ImGui::End();
 	}
 }
+
+struct BindShader {
+	BindShader(Shader &shader) {shader.use();}
+	~BindShader() {glUseProgram(0);}
+};
+
+struct BindArrayBuffer {
+	BindArrayBuffer(GLuint buffer) {glBindBuffer(GL_ARRAY_BUFFER, buffer);}
+	~BindArrayBuffer() {glBindBuffer(GL_ARRAY_BUFFER, 0);}
+};
 
 void App::update(float delta_time) {
 	if (anim_play) frame_count++;
