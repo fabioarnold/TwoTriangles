@@ -39,7 +39,7 @@ void App::parseUniforms() {
 	}
 }
 
-// bad O(n^2) proc. but ok since in most cases there are less than 64 uniforms
+// bad O(n^2) proc. but ok since in most cases there are not that many uniforms
 void App::transferUniformData(ShaderUniform *old_uniforms, int old_uniform_count) {
 	for (int oui = 0; oui < old_uniform_count; oui++) {
 		ShaderUniform *old_uniform = old_uniforms+oui;
@@ -72,6 +72,7 @@ void App::readUniformData() {
 	u32 version; fread(&version, sizeof(u32), 1, file);
 	if (fourcc != *((u32*)uniformdata_fourcc) || version != uniformdata_version) {
 		LOGE("Not a valid uniformdata file: %s %d %d", uniform_file_path, *((u32*)uniformdata_fourcc), fourcc);
+		fclose(file);
 		return;
 	}
 
@@ -266,10 +267,10 @@ void App::init() {
 	camera.euler_angles.x = 0.1f * M_PI;
 
 	static vec2 positions[4] = {
-		{-1.0f, -1.0f},
-		{1.0f, -1.0f},
-		{-1.0f, 1.0f},
-		{1.0f, 1.0f}
+		{{-1.0f, -1.0f}},
+		{{ 1.0f, -1.0f}},
+		{{-1.0f,  1.0f}},
+		{{ 1.0f,  1.0f}}
 	};
 	glGenBuffers(1, &two_triangles_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, two_triangles_vbo);
@@ -312,8 +313,8 @@ void App::init() {
 	style.Colors[ImGuiCol_CloseButton]           = ImVec4(0.50f, 0.81f, 0.90f, 0.50f);
 	style.Colors[ImGuiCol_CloseButtonHovered]    = ImVec4(0.70f, 0.86f, 0.90f, 0.60f);
 	style.Colors[ImGuiCol_CloseButtonActive]     = ImVec4(0.70f, 0.70f, 0.70f, 1.00f);
-	ImGuiIO& io = ImGui::GetIO();
 #if 0
+	ImGuiIO& io = ImGui::GetIO();
 	float size_pixels = 15.0f;
 	ImFontConfig config;
 	config.OversampleH = 2;

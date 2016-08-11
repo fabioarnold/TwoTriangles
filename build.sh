@@ -12,7 +12,7 @@ if [[ $1 = "clean" ]]; then
 	exit 0
 fi
 
-DEBUG_FLAGS="-O0 -g -DDEBUG"
+DEBUG_FLAGS="-Wall -O0 -g -DDEBUG"
 RELEASE_FLAGS="-Os"
 if [[ $1 = "release" ]]; then
 	CFLAGS="$CFLAGS -std=c++11 $RELEASE_FLAGS"
