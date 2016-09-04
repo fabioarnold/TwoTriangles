@@ -19,6 +19,8 @@ Unity build file using SDL2
 #include <SDL_opengl.h>
 #include <SDL_opengl_glext.h>
 
+#define COMPANY_NAME "FabioWare"
+#define APPLICATION_NAME "TwoTriangles"
 #define WINDOW_TITLE "Two Triangles"
 SDL_Window *sdl_window;
 SDL_GLContext sdl_gl_context;
@@ -232,8 +234,33 @@ int main(int argc, char *argv[]) {
 	app->video.width = 1024;
 	app->video.height = 640;
 	app->video.pixel_scale = 1.0f;
+
+	// set preferences_filepath and read preferences
+	char *pref_path = SDL_GetPrefPath(COMPANY_NAME, APPLICATION_NAME);
+
+	size_t preferences_ini_str_len = strlen(pref_path)+strlen("preferences.ini")+1;
+	app->preferences_filepath = new char[preferences_ini_str_len];
+	strcpy(app->preferences_filepath, pref_path);
+	strcat(app->preferences_filepath, "preferences.ini");
+	size_t session_ini_str_len = strlen(pref_path)+strlen("session.ini")+1;
+	app->session_filepath = new char[session_ini_str_len];
+	strcpy(app->session_filepath, pref_path);
+	strcat(app->session_filepath, "session.ini");
+	size_t imgui_ini_str_len = strlen(pref_path)+strlen("imgui.ini")+1;
+	ImGuiIO& io = ImGui::GetIO();
+	char *imgui_ini_filepath = new char[imgui_ini_str_len];
+	strcpy(imgui_ini_filepath, pref_path);
+	strcat(imgui_ini_filepath, "imgui.ini");
+	io.IniFilename = imgui_ini_filepath;
+
+	SDL_free(pref_path);
+	app->readPreferences();
+	app->readSession();
+
 	initSDL(&app->video);
+
 	ImGui_ImplSdlGL2_Init(sdl_window);
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -251,6 +278,8 @@ int main(int argc, char *argv[]) {
 			SDL_Delay(16 - elapsedTicks);
 		}
 	} while(!app->quit);
+
+	app->beforeQuit();
 
 	ImGui_ImplSdlGL2_Shutdown();
 	quitSDL();

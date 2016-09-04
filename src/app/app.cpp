@@ -1,8 +1,8 @@
 void TextureSlot::clear() {
 	if (texture) glDeleteTextures(1, &texture);
-	if (image_file_path) free(image_file_path);
+	if (image_filepath) free(image_filepath);
 	texture = 0;
-	image_file_path = nullptr;
+	image_filepath = nullptr;
 }
 
 void App::parseUniforms() {
@@ -58,20 +58,20 @@ static const char *uniformdata_ext = ".uniformdata";
 static const char *uniformdata_fourcc = "UDAT";
 static const u32 uniformdata_version = 1;
 void App::readUniformData() {
-	if (!file_path) return;
-	size_t uniform_file_path_len = strlen(file_path)+strlen(uniformdata_ext);
-	char *uniform_file_path = new char[uniform_file_path_len+1];
-	strcpy(uniform_file_path, file_path);
-	strcat(uniform_file_path, uniformdata_ext);
+	if (!shader_filepath) return;
+	size_t uniform_filepath_len = strlen(shader_filepath)+strlen(uniformdata_ext);
+	char *uniform_filepath = new char[uniform_filepath_len+1];
+	strcpy(uniform_filepath, shader_filepath);
+	strcat(uniform_filepath, uniformdata_ext);
 
-	FILE *file = fopen(uniform_file_path, "rb");
-	delete [] uniform_file_path;
+	FILE *file = fopen(uniform_filepath, "rb");
+	delete [] uniform_filepath;
 	if (!file) return;
 
 	u32 fourcc;  fread(&fourcc,  sizeof(u32), 1, file);
 	u32 version; fread(&version, sizeof(u32), 1, file);
 	if (fourcc != *((u32*)uniformdata_fourcc) || version != uniformdata_version) {
-		LOGE("Not a valid uniformdata file: %s %d %d", uniform_file_path, *((u32*)uniformdata_fourcc), fourcc);
+		LOGE("Not a valid uniformdata file: %s %d %d", uniform_filepath, *((u32*)uniformdata_fourcc), fourcc);
 		fclose(file);
 		return;
 	}
@@ -103,14 +103,14 @@ void App::readUniformData() {
 }
 
 void App::writeUniformData() {
-	if (!file_path) return;
-	size_t uniform_file_path_len = strlen(file_path)+strlen(uniformdata_ext);
-	char *uniform_file_path = new char[uniform_file_path_len+1];
-	strcpy(uniform_file_path, file_path);
-	strcat(uniform_file_path, uniformdata_ext);
+	if (!shader_filepath) return;
+	size_t uniform_filepath_len = strlen(shader_filepath)+strlen(uniformdata_ext);
+	char *uniform_filepath = new char[uniform_filepath_len+1];
+	strcpy(uniform_filepath, shader_filepath);
+	strcat(uniform_filepath, uniformdata_ext);
 
-	FILE *file = fopen(uniform_file_path, "wb");
-	delete [] uniform_file_path;
+	FILE *file = fopen(uniform_filepath, "wb");
+	delete [] uniform_filepath;
 	if (!file) return;
 
 	// convert pointers into offsets
@@ -141,17 +141,23 @@ static const char *error_frag_src =
 	"	gl_FragColor = vec4(red, alpha);"
 	"}";
 
-void App::loadShader(const char *frag_file_path, bool initial) {
+void App::reloadShader() {
+	loadShader(shader_filepath, /*reload*/true);
+}
+
+void App::loadShader(const char *frag_shader_filepath, bool reload) {
 	// clean up
 	if (compile_error_log) {
 		delete [] compile_error_log;
 		compile_error_log = nullptr;
 	}
 
-	char *shader_src = readStringFromFile(frag_file_path);
-	if (!shader_src) return; // couldn't read from file
+	char *shader_src = readStringFromFile(frag_shader_filepath);
+	if (!shader_src) return; // couldn't read from file TODO: feedback
 	// copy src into editor buffer
 	strncpy(src_edit_buffer, shader_src, sizeof(src_edit_buffer));
+	// zero terminate just in case so we don't overflow in writeStringToFile
+	src_edit_buffer[sizeof(src_edit_buffer)-1] = '\0';
 
 	// compile newly loaded shader
 	bool is_compiled = shader.compileAndAttach(GL_FRAGMENT_SHADER, shader_src);
@@ -170,11 +176,7 @@ void App::loadShader(const char *frag_file_path, bool initial) {
 	}
 	shader.link();
 
-	if (initial) {
-		parseUniforms();
-		// load uniform values from disk
-		readUniformData();
-	} else {
+	if (reload) {
 		ShaderUniform *old_uniforms = uniforms; uniforms = nullptr;
 		u8 *old_uniform_data = uniform_data; uniform_data = nullptr;
 		int old_uniform_count = uniform_count;
@@ -186,52 +188,236 @@ void App::loadShader(const char *frag_file_path, bool initial) {
 			assert(old_uniforms); delete [] old_uniforms;
 			assert(old_uniform_data); delete [] old_uniform_data;
 		}
-	}
-}
+	} else {
+		// store filepath
+		if (shader_filepath) delete [] shader_filepath;
+		shader_filepath = new char[strlen(frag_shader_filepath)+1];
+		strcpy(shader_filepath, frag_shader_filepath);
 
-void App::openShaderDialog() {
-	char *out_file_path = nullptr;
-	nfdresult_t result = NFD_OpenDialog("frag,glsl,fsh,txt", nullptr, &out_file_path);
-	SDL_RaiseWindow(sdl_window); // workaround: focus window again after dialog closes
-	
-	if (result == NFD_OKAY) {
-		if (file_path) free(file_path);
-		file_path = out_file_path;
+		parseUniforms();
+		// load uniform values from disk
+		readUniformData();
 
-		struct stat attr;
-		if (!stat(file_path, &attr)) { // file exists
-			file_mod_time = attr.st_mtime;
-			loadShader(file_path, /*initial*/true);
+		// update most recently used filepaths
+		char *found = nullptr; // check if path is already in list from least recent to most recent
+		for (int i = ARRAY_COUNT(recently_used_filepaths)-1; i >= 0; i--) {
+			int index = (most_recently_used_index+i) % ARRAY_COUNT(recently_used_filepaths);
+			if (found) { // shift entries down to overwrite found entry
+				int prev = (index+1) % ARRAY_COUNT(recently_used_filepaths);
+				recently_used_filepaths[prev] = recently_used_filepaths[index];
+			} else if (recently_used_filepaths[index] && !strcmp(recently_used_filepaths[index], shader_filepath)) {
+				found = recently_used_filepaths[index];
+			}
+		}
+		if (found) {
+			recently_used_filepaths[most_recently_used_index] = found;
+		} else {
+			most_recently_used_index = (ARRAY_COUNT(recently_used_filepaths)+most_recently_used_index-1) % ARRAY_COUNT(recently_used_filepaths);
+			if (recently_used_filepaths[most_recently_used_index]) {
+				delete [] recently_used_filepaths[most_recently_used_index];
+			}
+			recently_used_filepaths[most_recently_used_index] = new char[strlen(shader_filepath)+1];
+			strcpy(recently_used_filepaths[most_recently_used_index], shader_filepath);
 		}
 	}
 }
 
+void App::clearRecentlyUsedFilepaths() {
+	for (int i = 0; i < ARRAY_COUNT(recently_used_filepaths); i++) {
+		if (recently_used_filepaths[i]) {
+			delete [] recently_used_filepaths[i];
+			recently_used_filepaths[i] = nullptr;
+		}
+	}
+}
+
+enum IniVarType {
+	INI_VAR_BOOL,
+	INI_VAR_INT,
+	INI_VAR_FLOAT,
+	INI_VAR_STRING
+};
+
+struct IniVar {
+	const char *name;
+	IniVarType type;
+	//int array_size;
+	void *pointer;
+
+	void setValue(char *str_value) {
+		switch (type) {
+			case INI_VAR_BOOL: case INI_VAR_INT: *(int*)pointer = atoi(str_value); break;
+			case INI_VAR_FLOAT: *(float*)pointer = atof(str_value); break;
+			case INI_VAR_STRING: {
+				char **str = (char**)pointer;
+				if (*str) delete [] *str;
+				*str = new char[strlen(str_value)+1];
+				strcpy(*str, str_value);
+				break;
+			}
+			default: assert(!"invalid var type");
+		}
+	}
+};
+
+void parseIniString(char *ini_str, IniVar *vars, size_t var_count) {
+	char *key = ini_str;
+	char *value = nullptr;
+	bool parse_value = false; // else parse key
+	for (char *c = ini_str; *c; c++) {
+		if (*c == '\n') {
+			if (parse_value) { // we have seen an equal sign in this line
+				*c = '\0'; // terminate value string
+				for (int vi = 0; vi < var_count; vi++) {
+					if (!strcmp(vars[vi].name, key)) {
+						vars[vi].setValue(value);
+						break;
+					}
+				}
+			}
+			parse_value = false;
+			key = c+1;
+		} else if (*c == '=') {
+			*c = '\0'; // terminate name string
+			parse_value = true;
+			value = c+1;
+		}
+	}
+}
+
+void App::readPreferences() {
+	if (!preferences_filepath) return;
+	char *preferences_str = readStringFromFile(preferences_filepath);
+	if (!preferences_str) return;
+
+	IniVar preferences_vars[] = {
+		{"shader_file_autoreload", INI_VAR_BOOL, &shader_file_autoreload},
+		{"single_triangle_mode", INI_VAR_BOOL, &single_triangle_mode}
+	};
+	parseIniString(preferences_str, preferences_vars, ARRAY_COUNT(preferences_vars));
+
+	delete [] preferences_str;
+}
+
+void App::writePreferences() {
+	if (!preferences_filepath) return;
+	FILE *file = fopen(preferences_filepath, "w");
+	if (!file) {
+		LOGW("Could not write '%s'.", preferences_filepath);
+		return;
+	}
+
+	fprintf(file, "shader_file_autoreload=%d\n", shader_file_autoreload);
+	fprintf(file, "single_triangle_mode=%d\n", single_triangle_mode);
+
+	fclose(file);
+}
+
+void App::readSession() {
+	if (!session_filepath) return;
+	char *session_str = readStringFromFile(session_filepath);
+	if (!session_str) return;
+
+	char *recently_used_str = nullptr; // "filepath0","filepath1","filepath2"
+	IniVar session_vars[] = {
+		{"recently_used", INI_VAR_STRING, &recently_used_str},
+		{"video_width", INI_VAR_INT, &video.width},
+		{"video_height", INI_VAR_INT, &video.height},
+	};
+	parseIniString(session_str, session_vars, ARRAY_COUNT(session_vars));
+
+	if (recently_used_str) {
+		// free old stuff
+		clearRecentlyUsedFilepaths();
+
+		int recently_used_count = 0;
+		char *filepath = nullptr;
+		for (char *c = recently_used_str; *c; c++) {
+			if (*c == '"') { // TODO: what about quotes in path
+				if (!filepath) filepath = c+1;
+				else {
+					size_t filepath_len = c-filepath;
+					if (filepath_len > 0) {
+						recently_used_filepaths[recently_used_count] = new char[filepath_len+1];
+						strncpy(recently_used_filepaths[recently_used_count], filepath, filepath_len);
+						recently_used_filepaths[recently_used_count][filepath_len] = '\0';
+						recently_used_count++;
+						if (recently_used_count == ARRAY_COUNT(recently_used_filepaths)) break;
+					} // else ignore empty string
+					filepath = nullptr;
+				}
+			}
+		}
+
+		delete [] recently_used_str;
+	}
+
+	delete [] session_str;
+}
+
+void App::writeSession() {
+	if (!session_filepath) return;
+	FILE *file = fopen(session_filepath, "w");
+	if (!file) {
+		LOGW("Could not write '%s'.", session_filepath);
+		return;
+	}
+
+	fprintf(file, "recently_used=");
+	for (int i = 0; i < ARRAY_COUNT(recently_used_filepaths); i++) {
+		int index = (most_recently_used_index+i) % ARRAY_COUNT(recently_used_filepaths);
+		if (recently_used_filepaths[index]) {
+			fprintf(file, "\"%s\",", recently_used_filepaths[index]);
+		} else break;
+	}
+	fprintf(file, "\n");
+	fprintf(file, "video_width=%d\n", video.width);
+	fprintf(file, "video_height=%d\n", video.height);
+
+	fclose(file);
+}
+
+void App::openShaderDialog() {
+	char *out_filepath = nullptr;
+	nfdresult_t result = NFD_OpenDialog("frag,glsl,fsh,txt", nullptr, &out_filepath);
+	SDL_RaiseWindow(sdl_window); // workaround: focus window again after dialog closes
+	
+	if (result == NFD_OKAY) {
+		struct stat attr;
+		if (!stat(out_filepath, &attr)) { // file exists
+			shader_file_mtime = attr.st_mtime;
+			loadShader(out_filepath);
+		}
+		free(out_filepath);
+	}
+}
+
 void App::saveShaderDialog() {
-	char *out_file_path = nullptr;
-	nfdresult_t result = NFD_SaveDialog("frag,glsl,fsh,txt", nullptr, &out_file_path);
+	char *out_filepath = nullptr;
+	nfdresult_t result = NFD_SaveDialog("frag,glsl,fsh,txt", nullptr, &out_filepath);
 	SDL_RaiseWindow(sdl_window); // workaround: focus window again after dialog closes
 
 	if (result == NFD_OKAY) {
-		if (file_path) free(file_path);
-		file_path = out_file_path;
+		if (shader_filepath) free(shader_filepath);
+		shader_filepath = out_filepath;
 
-		writeStringToFile(file_path, src_edit_buffer);
+		writeStringToFile(shader_filepath, src_edit_buffer);
 		struct stat attr;
-		if (!stat(file_path, &attr)) { // file exists
-			file_mod_time = 0; // force autoreload
+		if (!stat(shader_filepath, &attr)) { // file exists
+			shader_file_mtime = 0; // force autoreload
 		}
 	}
 }
 
 void App::openImageDialog(TextureSlot *texture_slot, bool load_cube_cross) {
-	char *out_file_path = nullptr;
-	nfdresult_t result = NFD_OpenDialog("tga,png,bmp,jpg,hdr", nullptr, &out_file_path);
+	char *out_filepath = nullptr;
+	nfdresult_t result = NFD_OpenDialog("tga,png,bmp,jpg,hdr", nullptr, &out_filepath);
 	SDL_RaiseWindow(sdl_window); // workaround: focus window again after dialog closes
 
 	if (result == NFD_OKAY) {
 		if (load_cube_cross) {
 			int out_size;
-			GLuint loaded_texture_cube = loadTextureCubeCross(out_file_path,
+			GLuint loaded_texture_cube = loadTextureCubeCross(out_filepath,
 				/*build_mipmaps*/true, &out_size);
 			if (loaded_texture_cube) {
 				texture_slot->clear();
@@ -240,11 +426,11 @@ void App::openImageDialog(TextureSlot *texture_slot, bool load_cube_cross) {
 				texture_slot->texture = loaded_texture_cube;
 				texture_slot->image_width = out_size;
 				texture_slot->image_height = out_size;
-				texture_slot->image_file_path = out_file_path;
+				texture_slot->image_filepath = out_filepath;
 			}
 		} else {
 			int out_width, out_height;
-			GLuint loaded_texture = loadTexture2D(out_file_path,
+			GLuint loaded_texture = loadTexture2D(out_filepath,
 				/*build_mipmaps*/true, &out_width, &out_height);
 			if (loaded_texture) { // loading successful
 				texture_slot->clear();
@@ -254,7 +440,7 @@ void App::openImageDialog(TextureSlot *texture_slot, bool load_cube_cross) {
 				texture_slot->texture = loaded_texture;
 				texture_slot->image_width = out_width;
 				texture_slot->image_height = out_height;
-				texture_slot->image_file_path = out_file_path;
+				texture_slot->image_filepath = out_filepath;
 			}
 		}
 	}
@@ -333,21 +519,45 @@ void App::gui() {
 
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
-			if (ImGui::MenuItem("Open fragment shader", io.OSXBehaviors ? "Cmd+O" : "Ctrl+O")) {
+			if (ImGui::MenuItem("Open...", io.OSXBehaviors ? "Cmd+O" : "Ctrl+O")) {
 				openShaderDialog();
 			}
-			if (ImGui::MenuItem("Save fragment shader", io.OSXBehaviors ? "Cmd+S" : "Ctrl+S", false, !!file_path)) {
-				writeStringToFile(file_path, src_edit_buffer);
+			if (ImGui::BeginMenu("Open Recent")) {
+				for (int i = 0; i < ARRAY_COUNT(recently_used_filepaths); i++) {
+					int index = (most_recently_used_index+i) % ARRAY_COUNT(recently_used_filepaths);
+					if (recently_used_filepaths[index]) {
+						char *menuitem_label = recently_used_filepaths[index];
+						// we might include libgen.h and use basename(3) but there is no windows support...
+						// TODO: test this on windows
+						char *basename = strrchr(menuitem_label, '/');
+						if (basename) menuitem_label = basename+1;
+						if (ImGui::MenuItem(menuitem_label)) {
+							loadShader(recently_used_filepaths[index]);
+						}
+						if (basename && ImGui::IsItemHovered()) {
+							ImGui::SetTooltip("%s", recently_used_filepaths[index]);
+						}
+					} else break;
+				}
+				ImGui::Separator();
+				if (ImGui::MenuItem("Clear Items")) {
+					clearRecentlyUsedFilepaths();
+				}
+				ImGui::EndMenu();
 			}
-			if (ImGui::IsItemHovered() && file_path) {
-				ImGui::SetTooltip("%s", file_path);
+			// TODO: move this to settings pane eventually
+			if (ImGui::MenuItem("Autoreload", nullptr, shader_file_autoreload)) {
+				shader_file_autoreload = !shader_file_autoreload;
+				writePreferences();
 			}
-			if (ImGui::MenuItem("Save fragment shader as...", io.OSXBehaviors ? "Cmd+Shift+S" : "Ctrl+Shift+S", false, !!src_edit_buffer[0])) {
+			if (ImGui::MenuItem("Save", io.OSXBehaviors ? "Cmd+S" : "Ctrl+S", false, !!shader_filepath)) {
+				writeStringToFile(shader_filepath, src_edit_buffer);
+			}
+			if (ImGui::IsItemHovered() && shader_filepath) {
+				ImGui::SetTooltip("%s", shader_filepath);
+			}
+			if (ImGui::MenuItem("Save As...", io.OSXBehaviors ? "Cmd+Shift+S" : "Ctrl+Shift+S", false, !!src_edit_buffer[0])) {
 				saveShaderDialog();
-			}
-			// TODO: move this to settings eventually
-			if (ImGui::MenuItem("Autoreload", nullptr, file_autoreload)) {
-				file_autoreload = !file_autoreload;
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Quit", "Esc")) {
@@ -355,6 +565,7 @@ void App::gui() {
 			}
  			ImGui::EndMenu();
 		}
+		// TODO: recently used files
 		if (ImGui::BeginMenu("Animation")) {
 			if (ImGui::MenuItem(anim_play ? "Pause" : "Play")) {
 				anim_play = !anim_play;
@@ -438,8 +649,8 @@ void App::gui() {
 				ImGui::SameLine();
 				//ImTextureID im_tex_id = (ImTextureID)(intptr_t)texture_slot->texture;
 				ImGui::Image((void*)texture_slot, ImVec2(64, 64));
-				if (ImGui::IsItemHovered() && texture_slot->image_file_path) {
-					ImGui::SetTooltip("%s\n%dx%d", texture_slot->image_file_path,
+				if (ImGui::IsItemHovered() && texture_slot->image_filepath) {
+					ImGui::SetTooltip("%s\n%dx%d", texture_slot->image_filepath,
 						texture_slot->image_width, texture_slot->image_height);
 				}
 
@@ -458,7 +669,7 @@ void App::gui() {
 	if (show_src_edit_window) {
 		if (ImGui::Begin("Source editor", &show_src_edit_window)) {
 			// TODO: add horizontal scrollbar
-			ImGui::InputTextMultiline("##Text buffer", src_edit_buffer, sizeof(src_edit_buffer),
+			ImGui::InputTextMultiline("##Text buffer", src_edit_buffer, sizeof(src_edit_buffer)-1,
 				/*fullwidth, fullheight*/ImVec2(-1.0f, -1.0f), ImGuiInputTextFlags_AllowTabInput);
 		}
 		ImGui::End();
@@ -470,7 +681,7 @@ void App::gui() {
 		| ImGuiWindowFlags_NoBringToFrontOnFocus
 		| ImGuiWindowFlags_NoMove
 		| ImGuiWindowFlags_NoSavedSettings;
-	if (!file_path) {
+	if (!shader_filepath) {
 		ImGui::SetNextWindowPosCenter();
 		ImGui::Begin("Overlay", nullptr, ImVec2(0, 0), 0.3f, overlay_flags);
 		ImGui::AlignFirstTextHeightToWidgets(); // valign text to button
@@ -504,12 +715,12 @@ void App::update(float delta_time) {
 	if (!hide_gui) gui();
 
 	// autoreload frag shader (every 60 frames)
-	if (file_path && file_autoreload && (frame_count % 60) == 0) {
+	if (shader_filepath && shader_file_autoreload && (frame_count % 60) == 0) {
 		struct stat attr;
-		if (!stat(file_path, &attr)) { // file exists
-			if (attr.st_mtime > file_mod_time) { // file has been modified
-				file_mod_time = attr.st_mtime;
-				loadShader(file_path, /*initial*/false);
+		if (!stat(shader_filepath, &attr)) { // file exists
+			if (attr.st_mtime > shader_file_mtime) { // file has been modified
+				shader_file_mtime = attr.st_mtime;
+				reloadShader();
 			}
 		}
 	}

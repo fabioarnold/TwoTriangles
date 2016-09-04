@@ -7,7 +7,7 @@ struct TextureSlot {
 	GLenum target = GL_TEXTURE_2D; // texture target: 1D 2D 3D or cube map
 	GLuint texture = 0;
 	int image_width, image_height;
-	char *image_file_path = nullptr;
+	char *image_filepath = nullptr;
 
 	void clear();
 };
@@ -18,11 +18,29 @@ struct App {
 	VideoMode video;
 	Camera camera;
 
-	MovementCommand movement_command;
+	MovementCommand movement_command; // camera control
 
-	char *file_path = nullptr;
-	int file_mod_time = 0;
-	bool file_autoreload = true;
+	char *preferences_filepath;
+	char *session_filepath;
+	void readPreferences();
+	void writePreferences();
+	void readSession();
+	void writeSession();
+
+	void init();
+	void update(float delta_time);
+
+	void beforeQuit() {writeSession();} // will be called before application exits
+
+private:
+	char *shader_filepath = nullptr;
+	int shader_file_mtime = 0;
+	bool shader_file_autoreload = true;
+
+	char *recently_used_filepaths[10] = {}; // cyclic, from most recent to less recent
+	int most_recently_used_index = 0; // top of stack
+
+	void clearRecentlyUsedFilepaths();
 
 	// As far as I understand ImGui::InputTextMultiline doesn't allow
 	// for reallocating the text buffer during a callback.
@@ -36,6 +54,13 @@ struct App {
 	u8 *uniform_data = nullptr;
 	size_t uniform_data_size;
 
+	void loadShader(const char *frag_file_path, bool reload=false);
+	void reloadShader();
+	void parseUniforms();
+	void readUniformData();
+	void writeUniformData();
+	void transferUniformData(ShaderUniform *old_uniforms, int old_uniform_count);
+
 	float u_time = 0.0f;
 	bool anim_play = true;
 	u64 frame_count = 0;
@@ -43,24 +68,15 @@ struct App {
 	TextureSlot texture_slots[8];
 
 	GLuint two_triangles_vbo;
-	
-	bool show_uniforms_window = false;
-	bool show_textures_window = false;
-	bool show_src_edit_window = false;
-
-	void init();
-	void update(float delta_time);
-
-private:
-	void parseUniforms();
-	void readUniformData();
-	void writeUniformData();
-	void transferUniformData(ShaderUniform *old_uniforms, int old_uniform_count);
-	
-	void loadShader(const char *frag_file_path, bool initial);
+	bool single_triangle_mode = false;
 	
 	void openShaderDialog();
 	void saveShaderDialog();
 	void openImageDialog(TextureSlot *texture_slot, bool load_cube_cross=false);
+
+	bool show_uniforms_window = false;
+	bool show_textures_window = false;
+	bool show_src_edit_window = false;
+
 	void gui();
 };
