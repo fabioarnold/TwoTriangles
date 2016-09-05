@@ -27,6 +27,13 @@ struct App {
 	void readSession();
 	void writeSession();
 
+	void openShaderDialog();
+	void saveShaderDialog();
+	void saveShader();
+
+	void toggleAnimation() {anim_play = !anim_play;}
+	void toggleWindow(int window_index);
+
 	void init();
 	void update(float delta_time);
 
@@ -70,8 +77,6 @@ private:
 	GLuint two_triangles_vbo;
 	bool single_triangle_mode = false;
 	
-	void openShaderDialog();
-	void saveShaderDialog();
 	void openImageDialog(TextureSlot *texture_slot, bool load_cube_cross=false);
 
 	bool show_uniforms_window = false;

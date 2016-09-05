@@ -4,10 +4,10 @@ Unity build file using SDL2
 
 
 
-#include <cassert>
-#include <ctime> // used by log
-#include <cfloat> // for FLT_MAX
-#include <cstdio> // for printf
+#include <assert.h>
+#include <time.h> // used by log
+#include <float.h> // for FLT_MAX
+#include <stdio.h> // for printf
 
 #include <sys/stat.h> // fstat
 
@@ -24,6 +24,9 @@ Unity build file using SDL2
 #define WINDOW_TITLE "Two Triangles"
 SDL_Window *sdl_window;
 SDL_GLContext sdl_gl_context;
+
+bool windowIsFullscreen();
+void windowToggleFullscreen();
 
 // ImGui
 #include <imgui.h>
@@ -156,44 +159,87 @@ void FrameTime::drawInfo() {
 
 App *app = nullptr;
 
+bool windowIsFullscreen() {
+	return !!(SDL_GetWindowFlags(sdl_window)&SDL_WINDOW_FULLSCREEN_DESKTOP);
+}
+
+void windowToggleFullscreen() {
+	SDL_SetWindowFullscreen(sdl_window,
+		windowIsFullscreen() ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+}
+
+u64 mouse_timer = 0;
+
 void mainLoop() {
+	ImGuiIO& io = ImGui::GetIO();
 	SDL_Event sdl_event;
 	while (SDL_PollEvent(&sdl_event)) {
 		ImGui_ImplSdlGL2_ProcessEvent(&sdl_event);
 		switch (sdl_event.type) {
-		case SDL_WINDOWEVENT:
-			switch (sdl_event.window.event) {
-        	case SDL_WINDOWEVENT_SIZE_CHANGED:
-				app->video.width  = sdl_event.window.data1;
-				app->video.height = sdl_event.window.data2;
-				{ // update opengl viewport
-					int drawable_width, drawable_height;
-					SDL_GL_GetDrawableSize(sdl_window, &drawable_width, &drawable_height);
-					glViewport(0, 0, drawable_width, drawable_height);
+			case SDL_WINDOWEVENT:
+				switch (sdl_event.window.event) {
+		        	case SDL_WINDOWEVENT_SIZE_CHANGED: {
+						app->video.width  = sdl_event.window.data1;
+						app->video.height = sdl_event.window.data2;
+						// update opengl viewport
+						int drawable_width, drawable_height;
+						SDL_GL_GetDrawableSize(sdl_window, &drawable_width, &drawable_height);
+						glViewport(0, 0, drawable_width, drawable_height);
+						break;
+					}
+				}
+				break;
+			case SDL_MOUSEMOTION:
+				mouse_timer = 0;
+				break;
+			case SDL_QUIT:
+				app->quit = true;
+				break;
+			case SDL_KEYDOWN: {
+				if (!io.WantCaptureKeyboard) {
+					if (sdl_event.key.keysym.sym == SDLK_SPACE) {
+						app->toggleAnimation();
+					}
+				}
+
+				// handle hotkeys
+				bool ctrl_key_down = io.OSXBehaviors ? io.KeySuper : io.KeyCtrl;
+				bool shift_key_down = io.KeyShift;
+				if (ctrl_key_down) {
+					switch (sdl_event.key.keysym.sym) {
+						case SDLK_1: case SDLK_2: case SDLK_3:
+							app->toggleWindow(sdl_event.key.keysym.sym-SDLK_1);
+							break;
+						case SDLK_f: // fullscreen
+							windowToggleFullscreen();
+							break;
+						case SDLK_h: // hide gui
+							if (!io.OSXBehaviors || shift_key_down) app->hide_gui = !app->hide_gui; // toggle imgui
+							break;
+						case SDLK_o: // open
+							app->openShaderDialog();
+							break;
+						case SDLK_q: // quit
+							app->quit = true;
+							break;
+						case SDLK_s: // save
+							if (shift_key_down) app->saveShaderDialog();
+							else app->saveShader();
+							break;
+						default: break;
+					}
+				}
+				if (sdl_event.key.keysym.sym == SDLK_F11) {
+					windowToggleFullscreen();
 				}
 				break;
 			}
-			break;
-		case SDL_QUIT:
-			app->quit = true;
-			break;
-		case SDL_KEYDOWN:
-			if (app->hide_gui || !ImGui::GetIO().WantCaptureKeyboard) {
-				app->quit = app->quit || sdl_event.key.keysym.sym == SDLK_ESCAPE;
-				if (sdl_event.key.keysym.sym == SDLK_h) {
-					// toggle imgui
-					app->hide_gui = !app->hide_gui;
-				}
-			}
-			if (sdl_event.key.keysym.sym == SDLK_F11) {
-				// toggle fullscreen
-				u32 fullscreen_flag = SDL_GetWindowFlags(sdl_window)&SDL_WINDOW_FULLSCREEN_DESKTOP;
-				SDL_SetWindowFullscreen(sdl_window,
-					fullscreen_flag ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
-			}
-			break;
 		}
 	}
+
+	// TODO: make use of mouse_timer
+	// doesn't seam to work on OS X?
+	SDL_ShowCursor(app->hide_gui ? SDL_DISABLE : SDL_ENABLE);
 
 	// TODO: better keyboard handling
 	// update input commands
@@ -214,7 +260,7 @@ void mainLoop() {
 		- (key_state[SDL_SCANCODE_LEFT ] == SDL_PRESSED ? 1.0f : 0.0f)
 		+ (key_state[SDL_SCANCODE_RIGHT] == SDL_PRESSED ? 1.0f : 0.0f));
 
-	if (!app->hide_gui && ImGui::GetIO().WantCaptureKeyboard) { // null movement
+	if (!app->hide_gui && io.WantCaptureKeyboard) { // null movement
 		app->movement_command.move = v3(0.0f);
 		app->movement_command.rotate = v2(0.0f);
 	}

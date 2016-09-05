@@ -409,6 +409,20 @@ void App::saveShaderDialog() {
 	}
 }
 
+void App::saveShader() {
+	if (!shader_filepath) return;
+	writeStringToFile(shader_filepath, src_edit_buffer);
+}
+
+void App::toggleWindow(int window_index) {
+	switch (window_index) {
+		case 0: show_uniforms_window = !show_uniforms_window; break;
+		case 1: show_textures_window = !show_textures_window; break;
+		case 2: show_src_edit_window = !show_src_edit_window; break;
+		default: assert(!"invalid window_index");
+	}
+}
+
 void App::openImageDialog(TextureSlot *texture_slot, bool load_cube_cross) {
 	char *out_filepath = nullptr;
 	nfdresult_t result = NFD_OpenDialog("tga,png,bmp,jpg,hdr", nullptr, &out_filepath);
@@ -551,7 +565,7 @@ void App::gui() {
 				writePreferences();
 			}
 			if (ImGui::MenuItem("Save", io.OSXBehaviors ? "Cmd+S" : "Ctrl+S", false, !!shader_filepath)) {
-				writeStringToFile(shader_filepath, src_edit_buffer);
+				saveShader();
 			}
 			if (ImGui::IsItemHovered() && shader_filepath) {
 				ImGui::SetTooltip("%s", shader_filepath);
@@ -560,30 +574,36 @@ void App::gui() {
 				saveShaderDialog();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Quit", "Esc")) {
+			if (ImGui::MenuItem("Quit", io.OSXBehaviors ? "Cmd+Q" : "Ctrl+Q")) {
 				quit = true;
 			}
  			ImGui::EndMenu();
 		}
-		// TODO: recently used files
-		if (ImGui::BeginMenu("Animation")) {
-			if (ImGui::MenuItem(anim_play ? "Pause" : "Play")) {
-				anim_play = !anim_play;
+		if (ImGui::BeginMenu("View")) {
+			if (ImGui::MenuItem("Fullscreen", io.OSXBehaviors ? "Cmd+F" : "Ctrl+F", windowIsFullscreen())) {
+				windowToggleFullscreen();
 			}
-			if (ImGui::MenuItem("Reset")) {
+			if (ImGui::MenuItem("Hide Controls", io.OSXBehaviors ? "Cmd+Shift+H" : "Ctrl+H", hide_gui)) {
+				hide_gui = !hide_gui;
+			}
+			ImGui::Separator();
+			if (ImGui::MenuItem(anim_play ? "Pause Animation" : "Play Animation", "Space")) {
+				toggleAnimation();
+			}
+			if (ImGui::MenuItem("Reset Animation")) {
 				frame_count = 0;
 			}
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Window")) {
-			if (ImGui::MenuItem("Uniforms", nullptr, show_uniforms_window)) {
+			if (ImGui::MenuItem("Uniforms", io.OSXBehaviors ? "Cmd+1" : "Ctrl+1", show_uniforms_window)) {
 				show_uniforms_window = !show_uniforms_window;
 			}
-			if (ImGui::MenuItem("Textures", nullptr, show_textures_window)) {
+			if (ImGui::MenuItem("Textures", io.OSXBehaviors ? "Cmd+2" : "Ctrl+2", show_textures_window)) {
 				show_textures_window = !show_textures_window;
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Source editor", nullptr, show_src_edit_window)) {
+			if (ImGui::MenuItem("Source editor", io.OSXBehaviors ? "Cmd+3" : "Ctrl+3", show_src_edit_window)) {
 				show_src_edit_window = !show_src_edit_window;
 			}
 			ImGui::EndMenu();
