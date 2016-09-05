@@ -536,7 +536,7 @@ void App::gui() {
 			if (ImGui::MenuItem("Open...", io.OSXBehaviors ? "Cmd+O" : "Ctrl+O")) {
 				openShaderDialog();
 			}
-			if (ImGui::BeginMenu("Open Recent")) {
+			if (ImGui::BeginMenu("Open Recent", !!recently_used_filepaths[most_recently_used_index])) {
 				for (int i = 0; i < ARRAY_COUNT(recently_used_filepaths); i++) {
 					int index = (most_recently_used_index+i) % ARRAY_COUNT(recently_used_filepaths);
 					if (recently_used_filepaths[index]) {
