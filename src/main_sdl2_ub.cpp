@@ -8,6 +8,7 @@ Unity build file using SDL2
 #include <time.h> // used by log
 #include <float.h> // for FLT_MAX
 #include <stdio.h> // for printf
+#include <stdlib.h> // for atoi
 
 #include <sys/stat.h> // fstat
 
