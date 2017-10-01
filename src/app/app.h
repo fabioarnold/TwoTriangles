@@ -20,6 +20,9 @@ struct App {
 
 	MovementCommand movement_command; // camera control
 
+	void reloadShader();
+	void recompileShader();
+
 	char *preferences_filepath;
 	char *session_filepath;
 	void readPreferences();
@@ -48,11 +51,12 @@ private:
 	int most_recently_used_index = 0; // top of stack
 
 	void clearRecentlyUsedFilepaths();
+	void addMostRecentlyUsedFilepaths(char *filepath);
 
 	// As far as I understand ImGui::InputTextMultiline doesn't allow
 	// for reallocating the text buffer during a callback.
-	// That's why I go for a static size
-	char src_edit_buffer[16 << 10] = {0}; // 16 KiB
+	// That's why I go for a static size.
+	char src_edit_buffer[64 << 10] = {0}; // 64 KiB
 
 	Shader shader;
 	char *compile_error_log = nullptr;
@@ -62,7 +66,7 @@ private:
 	size_t uniform_data_size;
 
 	void loadShader(const char *frag_file_path, bool reload=false);
-	void reloadShader();
+	void compileShader(const char *shader_src, bool recompile=false);
 	void parseUniforms();
 	void readUniformData();
 	void writeUniformData();

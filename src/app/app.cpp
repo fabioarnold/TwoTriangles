@@ -145,38 +145,34 @@ void App::reloadShader() {
 	loadShader(shader_filepath, /*reload*/true);
 }
 
-void App::loadShader(const char *frag_shader_filepath, bool reload) {
-	// clean up
+void App::recompileShader() {
+	compileShader(src_edit_buffer, /*recompile*/true);
+}
+
+void App::compileShader(const char *shader_src, bool recompile) {
+	// clean up error log
 	if (compile_error_log) {
 		delete [] compile_error_log;
 		compile_error_log = nullptr;
 	}
 
-	char *shader_src = readStringFromFile(frag_shader_filepath);
-	if (!shader_src) return; // couldn't read from file TODO: feedback
-	// copy src into editor buffer
-	strncpy(src_edit_buffer, shader_src, sizeof(src_edit_buffer));
-	// zero terminate just in case so we don't overflow in writeStringToFile
-	src_edit_buffer[sizeof(src_edit_buffer)-1] = '\0';
+	bool is_compiled, is_linked;
 
 	// compile newly loaded shader
-	bool is_compiled = shader.compileAndAttach(GL_FRAGMENT_SHADER, shader_src);
-	delete [] shader_src;
-
+	is_compiled = shader.compileAndAttach(GL_FRAGMENT_SHADER, shader_src);
 	if (!is_compiled) {
 		compile_error_log = shader.getShaderCompileErrorLog(GL_FRAGMENT_SHADER);
-		assert(compile_error_log); // should be logically eq. to !is_compiled
-
-		// use error shader
-		shader.compileAndAttach(GL_FRAGMENT_SHADER, error_frag_src);
-		shader.link();
-		shader.use();
-		glUniform1f(shader.getUniformLocation("u_error_time"), u_time);
-		return; // keep old uniforms
+		goto shader_compilation_failed;
 	}
-	shader.link();
 
-	if (reload) {
+	is_linked = shader.link();
+	if (!is_linked) {
+		compile_error_log = shader.getLinkErrorLog();
+		goto shader_compilation_failed;
+	}
+
+	if (recompile) {
+		// try to migrate uniform data
 		ShaderUniform *old_uniforms = uniforms; uniforms = nullptr;
 		u8 *old_uniform_data = uniform_data; uniform_data = nullptr;
 		int old_uniform_count = uniform_count;
@@ -189,37 +185,44 @@ void App::loadShader(const char *frag_shader_filepath, bool reload) {
 			assert(old_uniform_data); delete [] old_uniform_data;
 		}
 	} else {
+		parseUniforms();
+		// load uniform values from disk
+		readUniformData();
+	}
+
+	return; // success
+
+shader_compilation_failed:
+	assert(compile_error_log); // logically eq. to shader did not compile
+
+	// use error shader
+	shader.compileAndAttach(GL_FRAGMENT_SHADER, error_frag_src);
+	shader.link();
+	shader.use();
+	glUniform1f(shader.getUniformLocation("u_error_time"), u_time);
+}
+
+void App::loadShader(const char *frag_shader_filepath, bool reload) {
+	char *shader_src = readStringFromFile(frag_shader_filepath);
+	if (!shader_src) return; // couldn't read from file TODO: feedback
+
+	if (!reload) { // first time load
 		// store filepath
 		if (shader_filepath) delete [] shader_filepath;
 		shader_filepath = new char[strlen(frag_shader_filepath)+1];
 		strcpy(shader_filepath, frag_shader_filepath);
 
-		parseUniforms();
-		// load uniform values from disk
-		readUniformData();
-
-		// update most recently used filepaths
-		char *found = nullptr; // check if path is already in list from least recent to most recent
-		for (int i = ARRAY_COUNT(recently_used_filepaths)-1; i >= 0; i--) {
-			int index = (most_recently_used_index+i) % ARRAY_COUNT(recently_used_filepaths);
-			if (found) { // shift entries down to overwrite found entry
-				int prev = (index+1) % ARRAY_COUNT(recently_used_filepaths);
-				recently_used_filepaths[prev] = recently_used_filepaths[index];
-			} else if (recently_used_filepaths[index] && !strcmp(recently_used_filepaths[index], shader_filepath)) {
-				found = recently_used_filepaths[index];
-			}
-		}
-		if (found) {
-			recently_used_filepaths[most_recently_used_index] = found;
-		} else {
-			most_recently_used_index = (ARRAY_COUNT(recently_used_filepaths)+most_recently_used_index-1) % ARRAY_COUNT(recently_used_filepaths);
-			if (recently_used_filepaths[most_recently_used_index]) {
-				delete [] recently_used_filepaths[most_recently_used_index];
-			}
-			recently_used_filepaths[most_recently_used_index] = new char[strlen(shader_filepath)+1];
-			strcpy(recently_used_filepaths[most_recently_used_index], shader_filepath);
-		}
+		addMostRecentlyUsedFilepaths(shader_filepath);
 	}
+
+	// copy src into editor buffer
+	strncpy(src_edit_buffer, shader_src, sizeof(src_edit_buffer));
+	// zero terminate just in case so we don't overflow in writeStringToFile
+	src_edit_buffer[sizeof(src_edit_buffer)-1] = '\0';
+
+	compileShader(shader_src, /*recompile*/reload);
+
+	delete [] shader_src;
 }
 
 void App::clearRecentlyUsedFilepaths() {
@@ -228,6 +231,29 @@ void App::clearRecentlyUsedFilepaths() {
 			delete [] recently_used_filepaths[i];
 			recently_used_filepaths[i] = nullptr;
 		}
+	}
+}
+
+void App::addMostRecentlyUsedFilepaths(char *filepath) {
+	char *found = nullptr; // check if path is already in list from least recent to most recent
+	for (int i = ARRAY_COUNT(recently_used_filepaths)-1; i >= 0; i--) {
+		int index = (most_recently_used_index+i) % ARRAY_COUNT(recently_used_filepaths);
+		if (found) { // shift entries down to overwrite found entry
+			int prev = (index+1) % ARRAY_COUNT(recently_used_filepaths);
+			recently_used_filepaths[prev] = recently_used_filepaths[index];
+		} else if (recently_used_filepaths[index] && !strcmp(recently_used_filepaths[index], filepath)) {
+			found = recently_used_filepaths[index];
+		}
+	}
+	if (found) {
+		recently_used_filepaths[most_recently_used_index] = found;
+	} else {
+		most_recently_used_index = (ARRAY_COUNT(recently_used_filepaths)+most_recently_used_index-1) % ARRAY_COUNT(recently_used_filepaths);
+		if (recently_used_filepaths[most_recently_used_index]) {
+			delete [] recently_used_filepaths[most_recently_used_index];
+		}
+		recently_used_filepaths[most_recently_used_index] = new char[strlen(filepath)+1];
+		strcpy(recently_used_filepaths[most_recently_used_index], filepath);
 	}
 }
 
@@ -595,6 +621,12 @@ void App::gui() {
 			}
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("Tools")) {
+			if (ImGui::MenuItem("Recompile Shader", io.OSXBehaviors ? "Cmd+B" : "Ctrl+B", false, !!src_edit_buffer[0])) {
+				recompileShader();
+			}
+			ImGui::EndMenu();
+		}
 		if (ImGui::BeginMenu("Window")) {
 			if (ImGui::MenuItem("Uniforms", io.OSXBehaviors ? "Cmd+1" : "Ctrl+1", show_uniforms_window)) {
 				show_uniforms_window = !show_uniforms_window;
@@ -701,7 +733,7 @@ void App::gui() {
 		| ImGuiWindowFlags_NoBringToFrontOnFocus
 		| ImGuiWindowFlags_NoMove
 		| ImGuiWindowFlags_NoSavedSettings;
-	if (!shader_filepath) {
+	if (!shader_filepath && !src_edit_buffer[0]) {
 		ImGui::SetNextWindowPosCenter();
 		ImGui::Begin("Overlay", nullptr, ImVec2(0, 0), 0.3f, overlay_flags);
 		ImGui::AlignFirstTextHeightToWidgets(); // valign text to button
@@ -773,7 +805,7 @@ void App::update(float delta_time) {
 		glUniform1f(shader.getUniformLocation(u_time_name), u_time);
 		vec2 u_resolution = v2(video.pixel_scale*video.width, video.pixel_scale*video.height);
 		glUniform2fv(shader.getUniformLocation(u_resolution_name), 1, u_resolution.e);
-		mat4 u_inv_view_mat = camera.makeInverseViewMatrix();
+		mat4 u_inv_view_mat = camera.getInverseViewMatrix();
 		int u_view_mat_loc = shader.getUniformLocation(u_view_mat_name);
 		glUniformMatrix4fv(u_view_mat_loc, 1, GL_FALSE, u_inv_view_mat.e);
 

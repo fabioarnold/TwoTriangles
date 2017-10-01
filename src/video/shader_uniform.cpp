@@ -9,7 +9,7 @@ size_t ShaderUniform::getTypeSize() {
 		case GL_FLOAT_MAT3: return 36;
 		case GL_FLOAT_MAT4: return 64;
 		case GL_SAMPLER_2D: case GL_SAMPLER_CUBE: return 4;
-		default: assert(!"ShaderUniform: unhandled type"); return 0;
+		default: LOGE("ShaderUniform: unknown type 0x%X", type); return 0;
 	}
 }
 

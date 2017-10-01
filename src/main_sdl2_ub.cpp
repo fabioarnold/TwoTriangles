@@ -49,6 +49,7 @@ void windowToggleFullscreen();
 #include "math/transform.h"
 
 #include "video/shader.h"
+#include "video/image.h"
 #include "video/texture.h"
 #include "video/model_mdl.h"
 #include "video/font_bitmap.h"
@@ -68,6 +69,7 @@ void windowToggleFullscreen();
 #include "math/transform.cpp"
 
 #include "video/shader.cpp"
+#include "video/image.cpp"
 #include "video/texture.cpp"
 //#include "video/texture_dds.cpp"
 //#include "video/model_mdl.cpp"
@@ -209,6 +211,9 @@ void mainLoop() {
 					switch (sdl_event.key.keysym.sym) {
 						case SDLK_1: case SDLK_2: case SDLK_3:
 							app->toggleWindow(sdl_event.key.keysym.sym-SDLK_1);
+							break;
+						case SDLK_b: // build / compile
+							app->recompileShader();
 							break;
 						case SDLK_f: // fullscreen
 							windowToggleFullscreen();
