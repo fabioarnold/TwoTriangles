@@ -212,7 +212,7 @@ void App::loadShader(const char *frag_shader_filepath, bool reload) {
 		shader_filepath = new char[strlen(frag_shader_filepath)+1];
 		strcpy(shader_filepath, frag_shader_filepath);
 
-		addMostRecentlyUsedFilepaths(shader_filepath);
+		addMostRecentlyUsedFilepath(shader_filepath);
 	}
 
 	// copy src into editor buffer
@@ -234,7 +234,7 @@ void App::clearRecentlyUsedFilepaths() {
 	}
 }
 
-void App::addMostRecentlyUsedFilepaths(char *filepath) {
+void App::addMostRecentlyUsedFilepath(char *filepath) {
 	char *found = nullptr; // check if path is already in list from least recent to most recent
 	for (int i = ARRAY_COUNT(recently_used_filepaths)-1; i >= 0; i--) {
 		int index = (most_recently_used_index+i) % ARRAY_COUNT(recently_used_filepaths);

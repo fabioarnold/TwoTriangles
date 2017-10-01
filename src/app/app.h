@@ -51,7 +51,7 @@ private:
 	int most_recently_used_index = 0; // top of stack
 
 	void clearRecentlyUsedFilepaths();
-	void addMostRecentlyUsedFilepaths(char *filepath);
+	void addMostRecentlyUsedFilepath(char *filepath);
 
 	// As far as I understand ImGui::InputTextMultiline doesn't allow
 	// for reallocating the text buffer during a callback.
