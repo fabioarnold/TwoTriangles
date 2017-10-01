@@ -688,9 +688,9 @@ void App::gui() {
 				ImGui::PushID(tsi);
 				ImGui::Text("%d:", tsi);
 				ImGui::SameLine();
-				ImGui::PushStyleColor(ImGuiCol_Button, ImColor::HSV(0.0f, 0.6f, 0.6f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImColor::HSV(0.0f, 0.7f, 0.7f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImColor::HSV(0.0f, 0.8f, 0.8f));
+				ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.0f, 0.6f, 0.6f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.0f, 0.7f, 0.7f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.0f, 0.8f, 0.8f));
 				if (ImGui::SmallButton("x")) texture_slot->clear();
 				ImGui::PopStyleColor(3);
 				if (ImGui::Button(" 2D ")) openImageDialog(texture_slot);
