@@ -78,8 +78,9 @@ private:
 
 	TextureSlot texture_slots[8];
 
+	GLuint single_triangle_vbo;
 	GLuint two_triangles_vbo;
-	bool single_triangle_mode = false;
+	bool single_triangle_mode = true;
 	
 	void openImageDialog(TextureSlot *texture_slot, bool load_cube_cross=false);
 

@@ -492,7 +492,16 @@ void App::init() {
 	camera.location = v3(0.0f, -4.0f, 2.0f);
 	camera.euler_angles.x = 0.1f * M_PI;
 
-	static vec2 positions[4] = {
+	static vec2 single_triangle_positions[4] = {
+		{{-1.0f, -1.0f}},
+		{{ 3.0f, -1.0f}},
+		{{-1.0f,  3.0f}}
+	};
+	glGenBuffers(1, &single_triangle_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, single_triangle_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(single_triangle_positions), single_triangle_positions, GL_STATIC_DRAW);
+
+	static vec2 two_triangles_positions[4] = {
 		{{-1.0f, -1.0f}},
 		{{ 1.0f, -1.0f}},
 		{{-1.0f,  1.0f}},
@@ -500,7 +509,7 @@ void App::init() {
 	};
 	glGenBuffers(1, &two_triangles_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, two_triangles_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(two_triangles_positions), two_triangles_positions, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	const char *vert_src =
@@ -790,7 +799,7 @@ void App::update(float delta_time) {
 		glBindTexture(texture_slots[tsi].target, texture_slots[tsi].texture);
 	}
 
-	// draw two triangles
+	// draw fullscreen triangle(s)
 	glClearColor(0.2, 0.21, 0.22, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	{ BindShader bind_shader(shader);
@@ -809,11 +818,20 @@ void App::update(float delta_time) {
 		int u_view_mat_loc = shader.getUniformLocation(u_view_mat_name);
 		glUniformMatrix4fv(u_view_mat_loc, 1, GL_FALSE, u_inv_view_mat.e);
 
-		{ BindArrayBuffer bind_array_buffer(two_triangles_vbo);
-			glEnableVertexAttribArray(VAT_POSITION);
-			glVertexAttribPointer(VAT_POSITION, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-			glDisableVertexAttribArray(VAT_POSITION);
+		if (single_triangle_mode) {
+			{ BindArrayBuffer bind_array_buffer(single_triangle_vbo);
+				glEnableVertexAttribArray(VAT_POSITION);
+				glVertexAttribPointer(VAT_POSITION, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+				glDrawArrays(GL_TRIANGLES, 0, 3);
+				glDisableVertexAttribArray(VAT_POSITION);
+			}
+		} else {
+			{ BindArrayBuffer bind_array_buffer(two_triangles_vbo);
+				glEnableVertexAttribArray(VAT_POSITION);
+				glVertexAttribPointer(VAT_POSITION, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+				glDisableVertexAttribArray(VAT_POSITION);
+			}
 		}
 	}
 }
