@@ -190,8 +190,13 @@ void mainLoop() {
 			case SDL_WINDOWEVENT:
 				switch (sdl_event.window.event) {
 		        	case SDL_WINDOWEVENT_SIZE_CHANGED: {
-						app->video.width  = sdl_event.window.data1;
+#ifdef _WIN32
+						app->video.width = sdl_event.window.data1 / app->video.pixel_scale;
+						app->video.height = sdl_event.window.data2 / app->video.pixel_scale;
+#else
+						app->video.width = sdl_event.window.data1;
 						app->video.height = sdl_event.window.data2;
+#endif
 						// update opengl viewport
 						int drawable_width, drawable_height;
 						SDL_GL_GetDrawableSize(sdl_window, &drawable_width, &drawable_height);
