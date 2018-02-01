@@ -16,7 +16,8 @@ struct App {
 	bool quit = false;
 	bool hide_gui = false;
 	VideoMode video;
-	Camera camera;
+	vec3 camera_location;
+	vec3 camera_euler_angles;
 
 	MovementCommand movement_command; // camera control
 
@@ -35,6 +36,7 @@ struct App {
 	void saveShaderDialog();
 	void saveShader();
 
+	void resetCamera();
 	void toggleAnimation() {anim_play = !anim_play;}
 	void toggleWindow(int window_index);
 
@@ -87,6 +89,7 @@ private:
 
 	bool show_uniforms_window = false;
 	bool show_textures_window = false;
+	bool show_camera_window = false;
 	bool show_src_edit_window = false;
 
 	void gui();

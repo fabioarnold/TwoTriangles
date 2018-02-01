@@ -55,8 +55,6 @@ void windowToggleFullscreen();
 #include "video/model_mdl.h"
 #include "video/font_bitmap.h"
 #include "video/video_mode.h"
-#include "video/camera.h"
-//#include "video/renderer.h"
 
 #include "video/shader_uniform.h"
 #include "app/app.h"
@@ -75,7 +73,6 @@ void windowToggleFullscreen();
 //#include "video/texture_dds.cpp"
 //#include "video/model_mdl.cpp"
 #include "video/font_bitmap.cpp"
-#include "video/camera.cpp"
 //#include "video/renderer.cpp"
 
 #include "video/shader_uniform.cpp"
@@ -235,7 +232,7 @@ void mainLoop() {
 				bool shift_key_down = io.KeyShift;
 				if (ctrl_key_down) {
 					switch (sdl_event.key.keysym.sym) {
-						case SDLK_1: case SDLK_2: case SDLK_3:
+						case SDLK_1: case SDLK_2: case SDLK_3: case SDLK_4:
 							app->toggleWindow(sdl_event.key.keysym.sym-SDLK_1);
 							break;
 						case SDLK_b: // build / compile
@@ -284,10 +281,10 @@ void mainLoop() {
 	app->movement_command.move = v3(
 		- (key_state[SDL_SCANCODE_A] == SDL_PRESSED ? 1.0f : 0.0f)
 		+ (key_state[SDL_SCANCODE_D] == SDL_PRESSED ? 1.0f : 0.0f),
-		- (key_state[SDL_SCANCODE_S] == SDL_PRESSED ? 1.0f : 0.0f)
-		+ (key_state[SDL_SCANCODE_W] == SDL_PRESSED ? 1.0f : 0.0f),
 		- (key_state[SDL_SCANCODE_Q] == SDL_PRESSED ? 1.0f : 0.0f)
-		+ (key_state[SDL_SCANCODE_E] == SDL_PRESSED ? 1.0f : 0.0f));
+		+ (key_state[SDL_SCANCODE_E] == SDL_PRESSED ? 1.0f : 0.0f),
+		- (key_state[SDL_SCANCODE_W] == SDL_PRESSED ? 1.0f : 0.0f)
+		+ (key_state[SDL_SCANCODE_S] == SDL_PRESSED ? 1.0f : 0.0f));
 	app->movement_command.rotate = v2(
 		- (key_state[SDL_SCANCODE_UP   ] == SDL_PRESSED ? 1.0f : 0.0f)
 		+ (key_state[SDL_SCANCODE_DOWN ] == SDL_PRESSED ? 1.0f : 0.0f),

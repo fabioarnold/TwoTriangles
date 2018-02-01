@@ -465,7 +465,8 @@ void App::toggleWindow(int window_index) {
 	switch (window_index) {
 		case 0: show_uniforms_window = !show_uniforms_window; break;
 		case 1: show_textures_window = !show_textures_window; break;
-		case 2: show_src_edit_window = !show_src_edit_window; break;
+		case 2: show_camera_window = !show_camera_window; break;
+		case 3: show_src_edit_window = !show_src_edit_window; break;
 		default: assert(!"invalid window_index");
 	}
 }
@@ -507,11 +508,15 @@ void App::openImageDialog(TextureSlot *texture_slot, bool load_cube_cross) {
 	}
 }
 
+void App::resetCamera() {
+	camera_location = v3(0.0f);
+	camera_euler_angles = v3(0.0f, 0.0f, 0.0f);
+}
+
 void App::init() {
 	quit = false;
 
-	camera.location = v3(0.0f, -4.0f, 2.0f);
-	camera.euler_angles.x = 0.1f * (float)M_PI;
+	resetCamera();
 
 	static vec2 single_triangle_positions[4] = {
 		{{-1.0f, -1.0f}},
@@ -580,9 +585,10 @@ void App::init() {
 }
 
 // builtin uniform names
-static char u_time_name[64]       = "u_time";
-static char u_resolution_name[64] = "u_resolution";
-static char u_view_mat_name[64]   = "u_view_mat";
+static char u_time_name[64]          = "u_time";
+static char u_resolution_name[64]    = "u_resolution";
+static char u_view_to_world_name[64] = "u_view_to_world";
+static char u_world_to_view_name[64] = "u_world_to_view";
 
 void App::gui() {
 	ImGuiIO& io = ImGui::GetIO();
@@ -653,28 +659,35 @@ void App::gui() {
 			if (ImGui::MenuItem("Reset Animation")) {
 				frame_count = 0;
 			}
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Tools")) {
-			if (ImGui::MenuItem("Recompile Shader", io.OSXBehaviors ? "Cmd+B" : "Ctrl+B", false, !!src_edit_buffer[0])) {
-				recompileShader();
+			if (ImGui::MenuItem("Reset Camera")) {
+				resetCamera();
 			}
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Window")) {
-			if (ImGui::MenuItem("Uniforms", io.OSXBehaviors ? "Cmd+1" : "Ctrl+1", show_uniforms_window)) {
-				show_uniforms_window = !show_uniforms_window;
-			}
-			if (ImGui::MenuItem("Textures", io.OSXBehaviors ? "Cmd+2" : "Ctrl+2", show_textures_window)) {
-				show_textures_window = !show_textures_window;
-			}
-			ImGui::Separator();
-			if (ImGui::MenuItem("Source editor", io.OSXBehaviors ? "Cmd+3" : "Ctrl+3", show_src_edit_window)) {
-				show_src_edit_window = !show_src_edit_window;
-			}
-			ImGui::EndMenu();
-		}
-		ImGui::EndMainMenuBar();
+if (ImGui::BeginMenu("Tools")) {
+	if (ImGui::MenuItem("Recompile Shader", io.OSXBehaviors ? "Cmd+B" : "Ctrl+B", false, !!src_edit_buffer[0])) {
+		recompileShader();
+	}
+	ImGui::EndMenu();
+}
+if (ImGui::BeginMenu("Window")) {
+	if (ImGui::MenuItem("Uniforms", io.OSXBehaviors ? "Cmd+1" : "Ctrl+1", show_uniforms_window)) {
+		show_uniforms_window = !show_uniforms_window;
+	}
+	if (ImGui::MenuItem("Textures", io.OSXBehaviors ? "Cmd+2" : "Ctrl+2", show_textures_window)) {
+		show_textures_window = !show_textures_window;
+	}
+	ImGui::Separator();
+	if (ImGui::MenuItem("Camera", io.OSXBehaviors ? "Cmd+3" : "Ctrl+3", show_textures_window)) {
+		show_camera_window = !show_camera_window;
+	}
+	ImGui::Separator();
+	if (ImGui::MenuItem("Source editor", io.OSXBehaviors ? "Cmd+4" : "Ctrl+4", show_src_edit_window)) {
+		show_src_edit_window = !show_src_edit_window;
+	}
+	ImGui::EndMenu();
+}
+ImGui::EndMainMenuBar();
 	}
 
 	if (show_uniforms_window) {
@@ -682,10 +695,11 @@ void App::gui() {
 			if (ImGui::CollapsingHeader("Built-in uniform names")) {
 				ImGui::InputText("Time", u_time_name, sizeof(u_time_name));
 				ImGui::InputText("Resolution", u_resolution_name, sizeof(u_resolution_name));
-				ImGui::InputText("View Matrix", u_view_mat_name, sizeof(u_view_mat_name));
+				ImGui::InputText("View to World Matrix", u_view_to_world_name, sizeof(u_view_to_world_name));
+				ImGui::InputText("World to View Matrix", u_world_to_view_name, sizeof(u_world_to_view_name));
 			}
 			ImGui::Separator();
-	
+
 			if (!compile_error_log) {
 				ImGui::AlignFirstTextHeightToWidgets();
 				ImGui::Text("Data"); ImGui::SameLine();
@@ -702,9 +716,10 @@ void App::gui() {
 				}
 				for (int i = 0; i < uniform_count; i++) {
 					// skip builtin uniforms
-					if (!strcmp(u_time_name,       uniforms[i].name)) continue;
+					if (!strcmp(u_time_name, uniforms[i].name)) continue;
 					if (!strcmp(u_resolution_name, uniforms[i].name)) continue;
-					if (!strcmp(u_view_mat_name,   uniforms[i].name)) continue;
+					if (!strcmp(u_view_to_world_name, uniforms[i].name)) continue;
+					if (!strcmp(u_world_to_view_name, uniforms[i].name)) continue;
 					uniforms[i].gui();
 				}
 			}
@@ -716,8 +731,8 @@ void App::gui() {
 		if (ImGui::Begin("Textures", &show_textures_window)) {
 			ImGui::Columns(2);
 			for (int tsi = 0; tsi < ARRAY_COUNT(texture_slots); tsi++) {
-				TextureSlot *texture_slot = texture_slots+tsi;
-				
+				TextureSlot *texture_slot = texture_slots + tsi;
+
 				ImGui::BeginGroup();
 				ImGui::PushID(tsi);
 				ImGui::Text("%d:", tsi);
@@ -740,9 +755,10 @@ void App::gui() {
 						texture_slot->image_width, texture_slot->image_height);
 				}
 
-				if ((tsi&1) && tsi+1 != ARRAY_COUNT(texture_slots)) {
+				if ((tsi & 1) && tsi + 1 != ARRAY_COUNT(texture_slots)) {
 					ImGui::Separator();
-				} else {
+				}
+				else {
 					ImGui::SameLine(); ImGui::Spacing();
 				}
 				ImGui::NextColumn();
@@ -750,6 +766,17 @@ void App::gui() {
 			ImGui::Columns(1);
 		}
 		ImGui::End();
+	}
+
+	if (show_camera_window) {
+		if (ImGui::Begin("Camera", &show_camera_window)) {
+			ImGui::DragFloat3("Location", camera_location.e);
+			ImGui::SliderAngle("Pitch", &camera_euler_angles.x);
+			ImGui::SliderAngle("Yaw", &camera_euler_angles.y);
+			ImGui::SliderAngle("Roll", &camera_euler_angles.z);
+			if (ImGui::Button("Reset")) resetCamera();
+			ImGui::End();
+		}
 	}
 
 	if (show_src_edit_window) {
@@ -811,12 +838,17 @@ void App::update(float delta_time) {
 		}
 	}
 
-	// update camera
-	camera.euler_angles += 2.0f*delta_time
-		* v3(movement_command.rotate.x, movement_command.rotate.y, 0.0f);
-	mat3 rot_y = rotationMatrix(v3(0.0f, 0.0f, 1.0f), -camera.euler_angles.y);
-	camera.location += rot_y * (8.0f*delta_time*movement_command.move);
-	camera.updateViewMatrix();
+	// update camera (-z: forward, y: up)
+	camera_euler_angles += 2.0f*delta_time
+		* v3(-movement_command.rotate.x, -movement_command.rotate.y, 0.0f);
+	camera_euler_angles.x = fminf(fmaxf(-0.5f*(float)M_PI, camera_euler_angles.x), 0.5f*(float)M_PI); // clamp
+	mat3 rot_x = rotationMatrix(v3(1.0f, 0.0f, 0.0f), camera_euler_angles.x);
+	mat3 rot_y = rotationMatrix(v3(0.0f, 1.0f, 0.0f), camera_euler_angles.y);
+	mat3 rot_z = rotationMatrix(v3(0.0f, 0.0f, 1.0f), camera_euler_angles.z);
+	mat3 rot = rot_y * rot_x * rot_z;
+	camera_location += rot * (8.0f*delta_time*movement_command.move);
+	mat4 view_to_world = translationMatrix(camera_location) * m4(rot);
+	mat4 world_to_view = m4(transpose(rot)) * translationMatrix(-camera_location);
 
 	// bind textures
 	for (int tsi = 0; tsi < ARRAY_COUNT(texture_slots); tsi++) {
@@ -839,9 +871,8 @@ void App::update(float delta_time) {
 		glUniform1f(shader.getUniformLocation(u_time_name), u_time);
 		vec2 u_resolution = v2(video.pixel_scale*video.width, video.pixel_scale*video.height);
 		glUniform2fv(shader.getUniformLocation(u_resolution_name), 1, u_resolution.e);
-		mat4 u_inv_view_mat = camera.getInverseViewMatrix();
-		int u_view_mat_loc = shader.getUniformLocation(u_view_mat_name);
-		glUniformMatrix4fv(u_view_mat_loc, 1, GL_FALSE, u_inv_view_mat.e);
+		glUniformMatrix4fv(shader.getUniformLocation(u_view_to_world_name), 1, GL_FALSE, view_to_world.e);
+		glUniformMatrix4fv(shader.getUniformLocation(u_world_to_view_name), 1, GL_FALSE, world_to_view.e);
 
 		if (single_triangle_mode) {
 			{ BindArrayBuffer bind_array_buffer(single_triangle_vbo);
