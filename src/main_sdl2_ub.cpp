@@ -120,6 +120,7 @@ static void initSDL(VideoMode *video) {
 		| SDL_WINDOW_RESIZABLE
 		| SDL_WINDOW_OPENGL
 		| SDL_WINDOW_ALLOW_HIGHDPI;
+	if (video->fullscreen) window_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
 	sdl_window = SDL_CreateWindow(WINDOW_TITLE,
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -177,6 +178,17 @@ bool windowIsFullscreen() {
 void windowToggleFullscreen() {
 	SDL_SetWindowFullscreen(sdl_window,
 		windowIsFullscreen() ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+	app->video.fullscreen = windowIsFullscreen();
+
+#ifdef _WIN32
+	// hack for when the title bar is off screen after restoring from fullscreen
+	if (!app->video.fullscreen) {
+		int x, y;
+		SDL_GetWindowPosition(sdl_window, &x, &y);
+		if (y < 32) SDL_SetWindowPosition(sdl_window, x, 32);
+	}
+#endif
 }
 
 u64 mouse_timer = 0;

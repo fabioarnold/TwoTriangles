@@ -348,7 +348,8 @@ void App::readSession() {
 	IniVar session_vars[] = {
 		{"recently_used", INI_VAR_STRING, &recently_used_str},
 		{"video_width", INI_VAR_INT, &video.width},
-		{"video_height", INI_VAR_INT, &video.height},
+		{ "video_height", INI_VAR_INT, &video.height },
+		{ "video_fullscreen", INI_VAR_INT, &video.fullscreen },
 	};
 	parseIniString(session_str, session_vars, ARRAY_COUNT(session_vars));
 
@@ -399,6 +400,7 @@ void App::writeSession() {
 	fprintf(file, "\n");
 	fprintf(file, "video_width=%d\n", video.width);
 	fprintf(file, "video_height=%d\n", video.height);
+	fprintf(file, "video_fullscreen=%d\n", video.fullscreen);
 
 	fclose(file);
 }
