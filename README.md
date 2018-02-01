@@ -15,6 +15,8 @@ This app simply draws two (shaded) triangles, which is basically a native offlin
 ### Windows
 You can find a Windows build on the releases page: https://github.com/fabioarnold/TwoTriangles/releases
 
+You might need to install the [Microsoft Visual C++ Redistributable for Visual Studio 2017](https://aka.ms/vs/15/release/VC_redist.x64.exe).
+
 ### Arch Linux
 You can obtain a package from the AUR: https://aur.archlinux.org/packages/twotris-git
 
@@ -23,7 +25,7 @@ You can obtain a package from the AUR: https://aur.archlinux.org/packages/twotri
 ### Install dependencies
 
 #### Windows
-You need [Visual Studio 2015](https://www.visualstudio.com).
+You need [Visual Studio 2017](https://www.visualstudio.com).
 
 #### OS X
 Assuming you already have Xcode installed, install dependencies using [Homebrew](http://brew.sh):
@@ -56,7 +58,7 @@ Build and run TwoTriangles: `sh build.sh run`
 
 #### Windows
 
-Open projects/visualstudio/TwoTriangles.sln in Visual Studio 2015 and the change the configuration from Debug to Release (I only configured Release x64 for now). Build the solution and place SDL.dll and glew32.dll, which you can find in the lib directory, in your target folder (e.g. projects/visualstudio/x64/Release). You should be able to run the program now.
+Open projects/visualstudio/TwoTriangles.sln in Visual Studio 2017 and build the TwoTriangles project either in Debug or Release mode. Note that the x64 is the only configured target. After a successful build you can find all the binaries the target folder (projects/visualstudio/x64/Release).
 
 ## Credits
 * [dear imgui](https://github.com/ocornut/imgui) by Omar Cornut

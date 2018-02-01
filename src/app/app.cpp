@@ -31,7 +31,7 @@ void App::parseUniforms() {
 	uniform_data = new u8[uniform_data_size];
 	memset(uniform_data, 0, uniform_data_size);
 	// 2nd pass: store offsets into uniform_data for each uniform
-	int offset = 0;
+	size_t offset = 0;
 	for (int uniform_index = 0; uniform_index < uniform_count; uniform_index++) {
 		ShaderUniform *uniform = uniforms+uniform_index;
 		uniform->data = uniform_data+offset;
@@ -273,7 +273,7 @@ struct IniVar {
 	void setValue(char *str_value) {
 		switch (type) {
 			case INI_VAR_BOOL: case INI_VAR_INT: *(int*)pointer = atoi(str_value); break;
-			case INI_VAR_FLOAT: *(float*)pointer = atof(str_value); break;
+			case INI_VAR_FLOAT: *(float*)pointer = (float)atof(str_value); break;
 			case INI_VAR_STRING: {
 				char **str = (char**)pointer;
 				if (*str) delete [] *str;
@@ -411,7 +411,7 @@ void App::openShaderDialog() {
 	if (result == NFD_OKAY) {
 		struct stat attr;
 		if (!stat(out_filepath, &attr)) { // file exists
-			shader_file_mtime = attr.st_mtime;
+			shader_file_mtime = (int)attr.st_mtime;
 			loadShader(out_filepath);
 		}
 		free(out_filepath);
@@ -490,7 +490,7 @@ void App::init() {
 	quit = false;
 
 	camera.location = v3(0.0f, -4.0f, 2.0f);
-	camera.euler_angles.x = 0.1f * M_PI;
+	camera.euler_angles.x = 0.1f * (float)M_PI;
 
 	static vec2 single_triangle_positions[4] = {
 		{{-1.0f, -1.0f}},
@@ -780,7 +780,7 @@ void App::update(float delta_time) {
 		struct stat attr;
 		if (!stat(shader_filepath, &attr)) { // file exists
 			if (attr.st_mtime > shader_file_mtime) { // file has been modified
-				shader_file_mtime = attr.st_mtime;
+				shader_file_mtime = (int)attr.st_mtime;
 				reloadShader();
 			}
 		}
@@ -800,7 +800,7 @@ void App::update(float delta_time) {
 	}
 
 	// draw fullscreen triangle(s)
-	glClearColor(0.2, 0.21, 0.22, 1.0);
+	glClearColor(0.2f, 0.21f, 0.22f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	{ BindShader bind_shader(shader);
 		if (!compile_error_log) {

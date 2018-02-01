@@ -1,0 +1,8 @@
+x64
+Release
+Debug
+*.VC.db
+*.sdf
+.vs
+*.user
+*.filters
