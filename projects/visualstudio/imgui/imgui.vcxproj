@@ -76,10 +76,10 @@
     <IncludePath>C:\devel\lib\SDL2-2.0.4\include;C:\Users\Fabio\Developer\TwoTriangles\lib\imgui;C:\Users\Fabio\Developer\TwoTriangles\lib\imgui\examples\sdl_opengl2_example;$(IncludePath);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)\lib\glew-1.13.0\include;$(SolutionDir)\lib\SDL2-2.0.4\include;$(SolutionDir)\..\..\lib\imgui;$(SolutionDir)\..\..\lib\gamelib\third_party\imgui;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\lib\glew-1.13.0\include;$(SolutionDir)\lib\SDL2-2.0.7\include;$(SolutionDir)\..\..\lib\imgui;$(SolutionDir)\..\..\lib\gamelib\third_party\imgui;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)\lib\glew-1.13.0\include;$(SolutionDir)\lib\SDL2-2.0.4\include;$(SolutionDir)\..\..\lib\imgui;$(SolutionDir)\..\..\lib\gamelib\third_party\imgui;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)\lib\glew-1.13.0\include;$(SolutionDir)\lib\SDL2-2.0.7\include;$(SolutionDir)\..\..\lib\imgui;$(SolutionDir)\..\..\lib\gamelib\third_party\imgui;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
