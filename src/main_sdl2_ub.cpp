@@ -235,6 +235,9 @@ void mainLoop() {
 						case SDLK_h: // hide gui
 							if (!io.OSXBehaviors || shift_key_down) app->hide_gui = !app->hide_gui; // toggle imgui
 							break;
+						case SDLK_n: // new
+							app->newShader();
+							break;
 						case SDLK_o: // open
 							app->openShaderDialog();
 							break;

@@ -30,6 +30,7 @@ struct App {
 	void readSession();
 	void writeSession();
 
+	void newShader();
 	void openShaderDialog();
 	void saveShaderDialog();
 	void saveShader();

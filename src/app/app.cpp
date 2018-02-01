@@ -403,6 +403,25 @@ void App::writeSession() {
 	fclose(file);
 }
 
+void App::newShader() {
+	const char *shader_src_template =
+		"uniform float u_time;\n"
+		"uniform vec2 u_resolution;\n"
+		"\n"
+		"void main() {\n"
+		"	vec2 uv = gl_FragCoord / u_resolution.xy;\n"
+		"	vec3 col = 0.5 + 0.5 * cos(u_time + uv.xyx + vec3(0.0, 2.0, 4.0));\n"
+		"	gl_FragColor = vec4(col, 1.0);\n"
+		"}\n";
+
+	if (shader_filepath) {
+		delete[](shader_filepath);
+		shader_filepath = nullptr;
+	}
+	strcpy(src_edit_buffer, shader_src_template);
+	recompileShader();
+}
+
 void App::openShaderDialog() {
 	char *out_filepath = nullptr;
 	nfdresult_t result = NFD_OpenDialog("frag,glsl,fsh,txt", nullptr, &out_filepath);
@@ -568,6 +587,10 @@ void App::gui() {
 
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
+			if (ImGui::MenuItem("New", io.OSXBehaviors ? "Cmd+N" : "Ctrl+N")) {
+				newShader();
+			}
+			ImGui::Separator();
 			if (ImGui::MenuItem("Open...", io.OSXBehaviors ? "Cmd+O" : "Ctrl+O")) {
 				openShaderDialog();
 			}
@@ -748,9 +771,9 @@ void App::gui() {
 		ImGui::AlignFirstTextHeightToWidgets(); // valign text to button
 		ImGui::Text("No fragment shader");
 		ImGui::SameLine();
-		if (ImGui::Button("Open")) {
-			openShaderDialog();
-		}
+		if (ImGui::Button("Open")) openShaderDialog();
+		ImGui::SameLine();
+		if (ImGui::Button("New")) newShader();
 		ImGui::End();
 	} else if (compile_error_log) {
 		ImGui::SetNextWindowPosCenter();
