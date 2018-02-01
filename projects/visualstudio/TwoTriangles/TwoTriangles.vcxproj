@@ -121,6 +121,9 @@
 xcopy /y "$(SolutionDir)lib\SDL2-2.0.4\lib\x64\SDL2.dll" "$(TargetDir)"</Command>
       <Message>copy DLLs into output directory</Message>
     </PostBuildEvent>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -161,6 +164,9 @@ xcopy /y "$(SolutionDir)lib\SDL2-2.0.4\lib\x64\SDL2.dll" "$(TargetDir)"</Command
       <Command>xcopy /y "$(SolutionDir)lib\glew-1.13.0\bin\Release\x64\glew32.dll" "$(TargetDir)"</Command>
       <Message>copy DLLs into output directory</Message>
     </PostBuildEvent>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\main_sdl2_ub.cpp" />

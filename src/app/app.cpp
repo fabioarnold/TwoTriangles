@@ -688,7 +688,7 @@ void App::gui() {
 	}
 
 	if (show_textures_window) {
-		if (ImGui::Begin("Textures", &show_textures_window, ImGuiWindowFlags_NoResize|ImGuiWindowFlags_AlwaysAutoResize)) {
+		if (ImGui::Begin("Textures", &show_textures_window)) {
 			ImGui::Columns(2);
 			for (int tsi = 0; tsi < ARRAY_COUNT(texture_slots); tsi++) {
 				TextureSlot *texture_slot = texture_slots+tsi;

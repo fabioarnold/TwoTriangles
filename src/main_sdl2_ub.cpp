@@ -90,6 +90,14 @@ static void initSDL(VideoMode *video) {
 		exit(1);
 	}
 
+#ifdef _WIN32
+	float ddpi;
+	if (!SDL_GetDisplayDPI(0, &ddpi, nullptr, nullptr)) {
+		const float WINDOWS_DEFAULT_DPI = 96.0f;
+		video->pixel_scale = ddpi / WINDOWS_DEFAULT_DPI;
+	}
+#endif
+
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 	//SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
@@ -111,12 +119,12 @@ static void initSDL(VideoMode *video) {
 		  SDL_WINDOW_SHOWN
 		| SDL_WINDOW_RESIZABLE
 		| SDL_WINDOW_OPENGL
-		//| SDL_WINDOW_ALLOW_HIGHDPI
-		;
+		| SDL_WINDOW_ALLOW_HIGHDPI;
 
 	sdl_window = SDL_CreateWindow(WINDOW_TITLE,
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		video->width, video->height, window_flags);
+		video->pixel_scale * video->width, video->pixel_scale * video->height,
+		window_flags);
 	if (!sdl_window) {
 		LOGE("Failed to create an OpenGL window: %s", SDL_GetError());
 		exit(1);
