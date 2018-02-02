@@ -14,7 +14,6 @@
 		E5C8AD422024040200CA34E0 /* libnativefiledialog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5C8AD35202403BC00CA34E0 /* libnativefiledialog.a */; };
 		E5C8AD432024040200CA34E0 /* libstb_image.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5C8AD24202403B500CA34E0 /* libstb_image.a */; };
 		E5C8AD442024041E00CA34E0 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5C8AD1E2024037F00CA34E0 /* SDL2.framework */; };
-		E5C8AD632024094B00CA34E0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5C8AD622024094B00CA34E0 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,7 +69,6 @@
 		E5C8ACF4202400EB00CA34E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E5C8AD1E2024037F00CA34E0 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		E5C8AD30202403BC00CA34E0 /* nativefiledialog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = nativefiledialog.xcodeproj; sourceTree = "<group>"; };
-		E5C8AD622024094B00CA34E0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,7 +76,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E5C8AD632024094B00CA34E0 /* Cocoa.framework in Frameworks */,
 				E5C8AD442024041E00CA34E0 /* SDL2.framework in Frameworks */,
 				E5C8AD412024040200CA34E0 /* libimgui.a in Frameworks */,
 				E5C8AD422024040200CA34E0 /* libnativefiledialog.a in Frameworks */,
@@ -98,7 +95,6 @@
 				E5C8AD1E2024037F00CA34E0 /* SDL2.framework */,
 				E5C8AD01202401A500CA34E0 /* TwoTriangles */,
 				E5C8AC4B2023F50F00CA34E0 /* Products */,
-				E5C8AD1A2024035A00CA34E0 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -117,14 +113,6 @@
 				E5C8ACF4202400EB00CA34E0 /* Info.plist */,
 			);
 			path = TwoTriangles;
-			sourceTree = "<group>";
-		};
-		E5C8AD1A2024035A00CA34E0 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				E5C8AD622024094B00CA34E0 /* Cocoa.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		E5C8AD20202403B500CA34E0 /* Products */ = {
