@@ -411,7 +411,7 @@ void App::newShader() {
 		"uniform vec2 u_resolution;\n"
 		"\n"
 		"void main() {\n"
-		"	vec2 uv = gl_FragCoord / u_resolution.xy;\n"
+		"	vec2 uv = gl_FragCoord.xy / u_resolution.xy;\n"
 		"	vec3 col = 0.5 + 0.5 * cos(u_time + uv.xyx + vec3(0.0, 2.0, 4.0));\n"
 		"	gl_FragColor = vec4(col, 1.0);\n"
 		"}\n";
