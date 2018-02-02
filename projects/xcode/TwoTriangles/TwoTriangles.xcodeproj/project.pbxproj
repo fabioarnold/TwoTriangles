@@ -1,0 +1,469 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E5C8AC5F2023F61500CA34E0 /* main_sdl2_ub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E5C8AC5E2023F61500CA34E0 /* main_sdl2_ub.cpp */; };
+		E5C8ACF5202400EB00CA34E0 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E5C8ACF4202400EB00CA34E0 /* Info.plist */; };
+		E5C8AD1F2024037F00CA34E0 /* SDL2.framework in Resources */ = {isa = PBXBuildFile; fileRef = E5C8AD1E2024037F00CA34E0 /* SDL2.framework */; };
+		E5C8AD412024040200CA34E0 /* libimgui.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5C8AD3A202403C300CA34E0 /* libimgui.a */; };
+		E5C8AD422024040200CA34E0 /* libnativefiledialog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5C8AD35202403BC00CA34E0 /* libnativefiledialog.a */; };
+		E5C8AD432024040200CA34E0 /* libstb_image.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5C8AD24202403B500CA34E0 /* libstb_image.a */; };
+		E5C8AD442024041E00CA34E0 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5C8AD1E2024037F00CA34E0 /* SDL2.framework */; };
+		E5C8AD632024094B00CA34E0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5C8AD622024094B00CA34E0 /* Cocoa.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E5C8AD23202403B500CA34E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E5C8ACE82023FD0F00CA34E0 /* stb_image.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E5C8ACDB2023FCD900CA34E0;
+			remoteInfo = stb_image;
+		};
+		E5C8AD34202403BC00CA34E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E5C8AD30202403BC00CA34E0 /* nativefiledialog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E5C8ACB12023FB0500CA34E0;
+			remoteInfo = nativefiledialog;
+		};
+		E5C8AD39202403C300CA34E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E5C8AC9F2023FA9100CA34E0 /* imgui.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E5C8AC942023F8E300CA34E0;
+			remoteInfo = imgui;
+		};
+		E5C8AD3B202403F800CA34E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E5C8AC9F2023FA9100CA34E0 /* imgui.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E5C8AC932023F8E300CA34E0;
+			remoteInfo = imgui;
+		};
+		E5C8AD3D202403F800CA34E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E5C8AD30202403BC00CA34E0 /* nativefiledialog.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E5C8ACB02023FB0500CA34E0;
+			remoteInfo = nativefiledialog;
+		};
+		E5C8AD3F202403F800CA34E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E5C8ACE82023FD0F00CA34E0 /* stb_image.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E5C8ACDA2023FCD900CA34E0;
+			remoteInfo = stb_image;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		E5C8AC4A2023F50F00CA34E0 /* TwoTriangles.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwoTriangles.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E5C8AC5E2023F61500CA34E0 /* main_sdl2_ub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main_sdl2_ub.cpp; sourceTree = "<group>"; };
+		E5C8AC9F2023FA9100CA34E0 /* imgui.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = imgui.xcodeproj; path = /Users/fabio/Developer/Projects/TwoTriangles/projects/xcode/TwoTriangles/imgui.xcodeproj; sourceTree = "<absolute>"; };
+		E5C8ACE82023FD0F00CA34E0 /* stb_image.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = stb_image.xcodeproj; sourceTree = "<group>"; };
+		E5C8ACF4202400EB00CA34E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E5C8AD1E2024037F00CA34E0 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../Frameworks/SDL2.framework; sourceTree = "<group>"; };
+		E5C8AD30202403BC00CA34E0 /* nativefiledialog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = nativefiledialog.xcodeproj; sourceTree = "<group>"; };
+		E5C8AD622024094B00CA34E0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E5C8AC472023F50F00CA34E0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E5C8AD632024094B00CA34E0 /* Cocoa.framework in Frameworks */,
+				E5C8AD442024041E00CA34E0 /* SDL2.framework in Frameworks */,
+				E5C8AD412024040200CA34E0 /* libimgui.a in Frameworks */,
+				E5C8AD422024040200CA34E0 /* libnativefiledialog.a in Frameworks */,
+				E5C8AD432024040200CA34E0 /* libstb_image.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E5C8AC412023F50F00CA34E0 = {
+			isa = PBXGroup;
+			children = (
+				E5C8AC9F2023FA9100CA34E0 /* imgui.xcodeproj */,
+				E5C8AD30202403BC00CA34E0 /* nativefiledialog.xcodeproj */,
+				E5C8ACE82023FD0F00CA34E0 /* stb_image.xcodeproj */,
+				E5C8AD1E2024037F00CA34E0 /* SDL2.framework */,
+				E5C8AD01202401A500CA34E0 /* TwoTriangles */,
+				E5C8AC4B2023F50F00CA34E0 /* Products */,
+				E5C8AD1A2024035A00CA34E0 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		E5C8AC4B2023F50F00CA34E0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E5C8AC4A2023F50F00CA34E0 /* TwoTriangles.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E5C8AD01202401A500CA34E0 /* TwoTriangles */ = {
+			isa = PBXGroup;
+			children = (
+				E5C8AC5E2023F61500CA34E0 /* main_sdl2_ub.cpp */,
+				E5C8ACF4202400EB00CA34E0 /* Info.plist */,
+			);
+			path = TwoTriangles;
+			sourceTree = "<group>";
+		};
+		E5C8AD1A2024035A00CA34E0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E5C8AD622024094B00CA34E0 /* Cocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E5C8AD20202403B500CA34E0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E5C8AD24202403B500CA34E0 /* libstb_image.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E5C8AD31202403BC00CA34E0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E5C8AD35202403BC00CA34E0 /* libnativefiledialog.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E5C8AD36202403C300CA34E0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E5C8AD3A202403C300CA34E0 /* libimgui.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E5C8AC492023F50F00CA34E0 /* TwoTriangles */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E5C8AC5B2023F50F00CA34E0 /* Build configuration list for PBXNativeTarget "TwoTriangles" */;
+			buildPhases = (
+				E5C8AC462023F50F00CA34E0 /* Sources */,
+				E5C8AC472023F50F00CA34E0 /* Frameworks */,
+				E5C8AC482023F50F00CA34E0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E5C8AD3C202403F800CA34E0 /* PBXTargetDependency */,
+				E5C8AD3E202403F800CA34E0 /* PBXTargetDependency */,
+				E5C8AD40202403F800CA34E0 /* PBXTargetDependency */,
+			);
+			name = TwoTriangles;
+			productName = TwoTriangles;
+			productReference = E5C8AC4A2023F50F00CA34E0 /* TwoTriangles.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E5C8AC422023F50F00CA34E0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = "Fabio Arnold";
+				TargetAttributes = {
+					E5C8AC492023F50F00CA34E0 = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = E5C8AC452023F50F00CA34E0 /* Build configuration list for PBXProject "TwoTriangles" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E5C8AC412023F50F00CA34E0;
+			productRefGroup = E5C8AC4B2023F50F00CA34E0 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E5C8AD36202403C300CA34E0 /* Products */;
+					ProjectRef = E5C8AC9F2023FA9100CA34E0 /* imgui.xcodeproj */;
+				},
+				{
+					ProductGroup = E5C8AD31202403BC00CA34E0 /* Products */;
+					ProjectRef = E5C8AD30202403BC00CA34E0 /* nativefiledialog.xcodeproj */;
+				},
+				{
+					ProductGroup = E5C8AD20202403B500CA34E0 /* Products */;
+					ProjectRef = E5C8ACE82023FD0F00CA34E0 /* stb_image.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				E5C8AC492023F50F00CA34E0 /* TwoTriangles */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E5C8AD24202403B500CA34E0 /* libstb_image.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libstb_image.a;
+			remoteRef = E5C8AD23202403B500CA34E0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E5C8AD35202403BC00CA34E0 /* libnativefiledialog.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libnativefiledialog.a;
+			remoteRef = E5C8AD34202403BC00CA34E0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E5C8AD3A202403C300CA34E0 /* libimgui.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libimgui.a;
+			remoteRef = E5C8AD39202403C300CA34E0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E5C8AC482023F50F00CA34E0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E5C8AD1F2024037F00CA34E0 /* SDL2.framework in Resources */,
+				E5C8ACF5202400EB00CA34E0 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E5C8AC462023F50F00CA34E0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E5C8AC5F2023F61500CA34E0 /* main_sdl2_ub.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E5C8AD3C202403F800CA34E0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = imgui;
+			targetProxy = E5C8AD3B202403F800CA34E0 /* PBXContainerItemProxy */;
+		};
+		E5C8AD3E202403F800CA34E0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = nativefiledialog;
+			targetProxy = E5C8AD3D202403F800CA34E0 /* PBXContainerItemProxy */;
+		};
+		E5C8AD40202403F800CA34E0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = stb_image;
+			targetProxy = E5C8AD3F202403F800CA34E0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		E5C8AC592023F50F00CA34E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = TwoTriangles/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		E5C8AC5A2023F50F00CA34E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = TwoTriangles/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		E5C8AC5C2023F50F00CA34E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = WP8PMMFZ39;
+				FRAMEWORK_SEARCH_PATHS = $PROJECT_DIR/../Frameworks;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include/SDL2,
+					$PROJECT_DIR/../../../lib/imgui,
+					$PROJECT_DIR/../../../lib/stb,
+					$PROJECT_DIR/../../../lib/nativefiledialog/src/include,
+					$PROJECT_DIR/../../../lib/gamelib/third_party/imgui,
+					$PROJECT_DIR/../../../lib/gamelib/src,
+					$PROJECT_DIR/../../../src,
+				);
+				INFOPLIST_FILE = TwoTriangles/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = de.fabioarnold.TwoTriangles;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		E5C8AC5D2023F50F00CA34E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = WP8PMMFZ39;
+				FRAMEWORK_SEARCH_PATHS = $PROJECT_DIR/../Frameworks;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include/SDL2,
+					$PROJECT_DIR/../../../lib/imgui,
+					$PROJECT_DIR/../../../lib/stb,
+					$PROJECT_DIR/../../../lib/nativefiledialog/src/include,
+					$PROJECT_DIR/../../../lib/gamelib/third_party/imgui,
+					$PROJECT_DIR/../../../lib/gamelib/src,
+					$PROJECT_DIR/../../../src,
+				);
+				INFOPLIST_FILE = TwoTriangles/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = de.fabioarnold.TwoTriangles;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E5C8AC452023F50F00CA34E0 /* Build configuration list for PBXProject "TwoTriangles" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E5C8AC592023F50F00CA34E0 /* Debug */,
+				E5C8AC5A2023F50F00CA34E0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E5C8AC5B2023F50F00CA34E0 /* Build configuration list for PBXNativeTarget "TwoTriangles" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E5C8AC5C2023F50F00CA34E0 /* Debug */,
+				E5C8AC5D2023F50F00CA34E0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E5C8AC422023F50F00CA34E0 /* Project object */;
+}
