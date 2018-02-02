@@ -388,6 +388,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = WP8PMMFZ39;
 				FRAMEWORK_SEARCH_PATHS = $PROJECT_DIR/../Frameworks;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					USE_STB_IMAGE,
+					"DEBUG=1",
+				);
 				HEADER_SEARCH_PATHS = (
 					/usr/local/include/SDL2,
 					$PROJECT_DIR/../../../lib/imgui,
@@ -413,6 +417,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = WP8PMMFZ39;
 				FRAMEWORK_SEARCH_PATHS = $PROJECT_DIR/../Frameworks;
+				GCC_PREPROCESSOR_DEFINITIONS = USE_STB_IMAGE;
 				HEADER_SEARCH_PATHS = (
 					/usr/local/include/SDL2,
 					$PROJECT_DIR/../../../lib/imgui,
