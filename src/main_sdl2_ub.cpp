@@ -53,7 +53,7 @@ void windowToggleFullscreen();
 #include "video/image.h"
 #include "video/texture.h"
 #include "video/model_mdl.h"
-#include "video/font_bitmap.h"
+//#include "video/font_bitmap.h"
 #include "video/video_mode.h"
 
 #include "video/shader_uniform.h"
@@ -72,7 +72,7 @@ void windowToggleFullscreen();
 #include "video/texture.cpp"
 //#include "video/texture_dds.cpp"
 //#include "video/model_mdl.cpp"
-#include "video/font_bitmap.cpp"
+//#include "video/font_bitmap.cpp"
 //#include "video/renderer.cpp"
 
 #include "video/shader_uniform.cpp"
@@ -159,12 +159,6 @@ void quitSDL() {
 }
 
 
-
-void FrameTime::drawInfo() {
-	char fps_text[64];
-	sprintf(fps_text, "FPS: %d\nframe time: %.3f ms", frames_per_second, 1000.0*smoothed_frame_time);
-	bitmapfont.drawText(fps_text, 8, 8);
-}
 
 App *app = nullptr;
 

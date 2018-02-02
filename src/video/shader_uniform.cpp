@@ -18,7 +18,7 @@ size_t ShaderUniform::getSize() {
 }
 
 void ShaderUniform::gui() {
-	char name_buf[64];
+	char name_buf[64+4];
 
 	ImGui::PushID(location);
 

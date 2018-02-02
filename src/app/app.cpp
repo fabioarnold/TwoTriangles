@@ -226,7 +226,7 @@ void App::loadShader(const char *frag_shader_filepath, bool reload) {
 }
 
 void App::clearRecentlyUsedFilepaths() {
-	for (int i = 0; i < ARRAY_COUNT(recently_used_filepaths); i++) {
+	for (int i = 0; i < (int)ARRAY_COUNT(recently_used_filepaths); i++) {
 		if (recently_used_filepaths[i]) {
 			delete [] recently_used_filepaths[i];
 			recently_used_filepaths[i] = nullptr;
@@ -236,10 +236,10 @@ void App::clearRecentlyUsedFilepaths() {
 
 void App::addMostRecentlyUsedFilepath(char *filepath) {
 	char *found = nullptr; // check if path is already in list from least recent to most recent
-	for (int i = ARRAY_COUNT(recently_used_filepaths)-1; i >= 0; i--) {
-		int index = (most_recently_used_index+i) % ARRAY_COUNT(recently_used_filepaths);
+	for (int i = (int)ARRAY_COUNT(recently_used_filepaths)-1; i >= 0; i--) {
+		int index = (most_recently_used_index+i) % (int)ARRAY_COUNT(recently_used_filepaths);
 		if (found) { // shift entries down to overwrite found entry
-			int prev = (index+1) % ARRAY_COUNT(recently_used_filepaths);
+			int prev = (index+1) % (int)ARRAY_COUNT(recently_used_filepaths);
 			recently_used_filepaths[prev] = recently_used_filepaths[index];
 		} else if (recently_used_filepaths[index] && !strcmp(recently_used_filepaths[index], filepath)) {
 			found = recently_used_filepaths[index];
@@ -248,7 +248,7 @@ void App::addMostRecentlyUsedFilepath(char *filepath) {
 	if (found) {
 		recently_used_filepaths[most_recently_used_index] = found;
 	} else {
-		most_recently_used_index = (ARRAY_COUNT(recently_used_filepaths)+most_recently_used_index-1) % ARRAY_COUNT(recently_used_filepaths);
+		most_recently_used_index = (int)(ARRAY_COUNT(recently_used_filepaths)+most_recently_used_index-1) % ARRAY_COUNT(recently_used_filepaths);
 		if (recently_used_filepaths[most_recently_used_index]) {
 			delete [] recently_used_filepaths[most_recently_used_index];
 		}
@@ -294,7 +294,7 @@ void parseIniString(char *ini_str, IniVar *vars, size_t var_count) {
 		if (*c == '\n') {
 			if (parse_value) { // we have seen an equal sign in this line
 				*c = '\0'; // terminate value string
-				for (int vi = 0; vi < var_count; vi++) {
+				for (size_t vi = 0; vi < var_count; vi++) {
 					if (!strcmp(vars[vi].name, key)) {
 						vars[vi].setValue(value);
 						break;
@@ -391,8 +391,8 @@ void App::writeSession() {
 	}
 
 	fprintf(file, "recently_used=");
-	for (int i = 0; i < ARRAY_COUNT(recently_used_filepaths); i++) {
-		int index = (most_recently_used_index+i) % ARRAY_COUNT(recently_used_filepaths);
+	for (int i = 0; i < (int)ARRAY_COUNT(recently_used_filepaths); i++) {
+		int index = (int)(most_recently_used_index+i) % ARRAY_COUNT(recently_used_filepaths);
 		if (recently_used_filepaths[index]) {
 			fprintf(file, "\"%s\",", recently_used_filepaths[index]);
 		} else break;
@@ -603,7 +603,7 @@ void App::gui() {
 				openShaderDialog();
 			}
 			if (ImGui::BeginMenu("Open Recent", !!recently_used_filepaths[most_recently_used_index])) {
-				for (int i = 0; i < ARRAY_COUNT(recently_used_filepaths); i++) {
+				for (int i = 0; i < (int)ARRAY_COUNT(recently_used_filepaths); i++) {
 					int index = (most_recently_used_index+i) % ARRAY_COUNT(recently_used_filepaths);
 					if (recently_used_filepaths[index]) {
 						char *menuitem_label = recently_used_filepaths[index];
@@ -730,7 +730,7 @@ ImGui::EndMainMenuBar();
 	if (show_textures_window) {
 		if (ImGui::Begin("Textures", &show_textures_window)) {
 			ImGui::Columns(2);
-			for (int tsi = 0; tsi < ARRAY_COUNT(texture_slots); tsi++) {
+			for (int tsi = 0; tsi < (int)ARRAY_COUNT(texture_slots); tsi++) {
 				TextureSlot *texture_slot = texture_slots + tsi;
 
 				ImGui::BeginGroup();
@@ -851,7 +851,7 @@ void App::update(float delta_time) {
 	mat4 world_to_view = m4(transpose(rot)) * translationMatrix(-camera_location);
 
 	// bind textures
-	for (int tsi = 0; tsi < ARRAY_COUNT(texture_slots); tsi++) {
+	for (int tsi = 0; tsi < (int)ARRAY_COUNT(texture_slots); tsi++) {
 		glActiveTexture(GL_TEXTURE0+tsi);
 		glBindTexture(texture_slots[tsi].target, texture_slots[tsi].texture);
 	}
