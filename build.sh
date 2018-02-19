@@ -24,8 +24,8 @@ LDFLAGS="-Lbuild"
 # gamelib
 INCLUDE_DIRS="-Ilib/gamelib/src"
 
-# SDL2
-LIB_SDL2="`pkg-config --libs sdl2`"
+# GLFW
+LIB_GLFW="`pkg-config --libs glfw3`"
 
 # OpenGL and Windowing
 LIB_OPENGL="-lGL -lGLEW"
@@ -73,13 +73,15 @@ elif [[ $OS_NAME = "Linux" ]]; then
 fi
 
 # final compiler flags
-CFLAGS="$CFLAGS `pkg-config --cflags sdl2` $INCLUDE_DIRS"
-LDFLAGS="$LDFLAGS $LIB_SDL2 $LIB_OPENGL $LIB_IMGUI $LIB_NFD $LIB_STB_IMAGE"
+CFLAGS="$CFLAGS `pkg-config --cflags glfw3` $INCLUDE_DIRS"
+LDFLAGS="$LDFLAGS $LIB_GLFW $LIB_OPENGL $LIB_IMGUI $LIB_NFD $LIB_STB_IMAGE"
 
 mkdir -p build
-c++ $CFLAGS src/main_sdl2_ub.cpp $LDFLAGS -o build/$TARGET
+c++ $CFLAGS src/main_glfw_ub.cpp $LDFLAGS -o build/$TARGET
 EXIT_STATUS=$?
 if [[ $EXIT_STATUS = 0 && $1 = "run" ]]; then
 	./build/$TARGET
+else
+	exit $EXIT_STATUS
 fi
 

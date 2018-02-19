@@ -198,7 +198,7 @@ void mainLoop() {
 		switch (sdl_event.type) {
 			case SDL_WINDOWEVENT:
 				switch (sdl_event.window.event) {
-		        	case SDL_WINDOWEVENT_SIZE_CHANGED: {
+					case SDL_WINDOWEVENT_SIZE_CHANGED: {
 #ifdef _WIN32
 						app->video.width = sdl_event.window.data1 / app->video.pixel_scale;
 						app->video.height = sdl_event.window.data2 / app->video.pixel_scale;

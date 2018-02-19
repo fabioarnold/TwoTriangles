@@ -10,3 +10,6 @@
 [submodule "lib/stb"]
 	path = lib/stb
 	url = https://github.com/nothings/stb.git
+[submodule "lib/noc"]
+	path = lib/noc
+	url = https://github.com/guillaumechereau/noc

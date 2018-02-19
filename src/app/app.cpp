@@ -427,7 +427,6 @@ void App::newShader() {
 void App::openShaderDialog() {
 	char *out_filepath = nullptr;
 	nfdresult_t result = NFD_OpenDialog("frag,glsl,fsh,txt", nullptr, &out_filepath);
-	SDL_RaiseWindow(sdl_window); // workaround: focus window again after dialog closes
 	
 	if (result == NFD_OKAY) {
 		struct stat attr;
@@ -442,7 +441,6 @@ void App::openShaderDialog() {
 void App::saveShaderDialog() {
 	char *out_filepath = nullptr;
 	nfdresult_t result = NFD_SaveDialog("frag,glsl,fsh,txt", nullptr, &out_filepath);
-	SDL_RaiseWindow(sdl_window); // workaround: focus window again after dialog closes
 
 	if (result == NFD_OKAY) {
 		if (shader_filepath) free(shader_filepath);
@@ -474,7 +472,6 @@ void App::toggleWindow(int window_index) {
 void App::openImageDialog(TextureSlot *texture_slot, bool load_cube_cross) {
 	char *out_filepath = nullptr;
 	nfdresult_t result = NFD_OpenDialog("tga,png,bmp,jpg,hdr", nullptr, &out_filepath);
-	SDL_RaiseWindow(sdl_window); // workaround: focus window again after dialog closes
 
 	if (result == NFD_OKAY) {
 		if (load_cube_cross) {
@@ -595,11 +592,11 @@ void App::gui() {
 
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
-			if (ImGui::MenuItem("New", io.OSXBehaviors ? "Cmd+N" : "Ctrl+N")) {
+			if (ImGui::MenuItem("New", io.OptMacOSXBehaviors ? "Cmd+N" : "Ctrl+N")) {
 				newShader();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Open...", io.OSXBehaviors ? "Cmd+O" : "Ctrl+O")) {
+			if (ImGui::MenuItem("Open...", io.OptMacOSXBehaviors ? "Cmd+O" : "Ctrl+O")) {
 				openShaderDialog();
 			}
 			if (ImGui::BeginMenu("Open Recent", !!recently_used_filepaths[most_recently_used_index])) {
@@ -630,26 +627,26 @@ void App::gui() {
 				shader_file_autoreload = !shader_file_autoreload;
 				writePreferences();
 			}
-			if (ImGui::MenuItem("Save", io.OSXBehaviors ? "Cmd+S" : "Ctrl+S", false, !!shader_filepath)) {
+			if (ImGui::MenuItem("Save", io.OptMacOSXBehaviors ? "Cmd+S" : "Ctrl+S", false, !!shader_filepath)) {
 				saveShader();
 			}
 			if (ImGui::IsItemHovered() && shader_filepath) {
 				ImGui::SetTooltip("%s", shader_filepath);
 			}
-			if (ImGui::MenuItem("Save As...", io.OSXBehaviors ? "Cmd+Shift+S" : "Ctrl+Shift+S", false, !!src_edit_buffer[0])) {
+			if (ImGui::MenuItem("Save As...", io.OptMacOSXBehaviors ? "Cmd+Shift+S" : "Ctrl+Shift+S", false, !!src_edit_buffer[0])) {
 				saveShaderDialog();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Quit", io.OSXBehaviors ? "Cmd+Q" : "Ctrl+Q")) {
+			if (ImGui::MenuItem("Quit", io.OptMacOSXBehaviors ? "Cmd+Q" : "Ctrl+Q")) {
 				quit = true;
 			}
  			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("View")) {
-			if (ImGui::MenuItem("Fullscreen", io.OSXBehaviors ? "Cmd+F" : "Ctrl+F", windowIsFullscreen())) {
+			if (ImGui::MenuItem("Fullscreen", io.OptMacOSXBehaviors ? "Cmd+F" : "Ctrl+F", windowIsFullscreen())) {
 				windowToggleFullscreen();
 			}
-			if (ImGui::MenuItem("Hide Controls", io.OSXBehaviors ? "Cmd+Shift+H" : "Ctrl+H", hide_gui)) {
+			if (ImGui::MenuItem("Hide Controls", io.OptMacOSXBehaviors ? "Cmd+Shift+H" : "Ctrl+H", hide_gui)) {
 				hide_gui = !hide_gui;
 			}
 			ImGui::Separator();
@@ -665,24 +662,24 @@ void App::gui() {
 			ImGui::EndMenu();
 		}
 if (ImGui::BeginMenu("Tools")) {
-	if (ImGui::MenuItem("Recompile Shader", io.OSXBehaviors ? "Cmd+B" : "Ctrl+B", false, !!src_edit_buffer[0])) {
+	if (ImGui::MenuItem("Recompile Shader", io.OptMacOSXBehaviors ? "Cmd+B" : "Ctrl+B", false, !!src_edit_buffer[0])) {
 		recompileShader();
 	}
 	ImGui::EndMenu();
 }
 if (ImGui::BeginMenu("Window")) {
-	if (ImGui::MenuItem("Uniforms", io.OSXBehaviors ? "Cmd+1" : "Ctrl+1", show_uniforms_window)) {
+	if (ImGui::MenuItem("Uniforms", io.OptMacOSXBehaviors ? "Cmd+1" : "Ctrl+1", show_uniforms_window)) {
 		show_uniforms_window = !show_uniforms_window;
 	}
-	if (ImGui::MenuItem("Textures", io.OSXBehaviors ? "Cmd+2" : "Ctrl+2", show_textures_window)) {
+	if (ImGui::MenuItem("Textures", io.OptMacOSXBehaviors ? "Cmd+2" : "Ctrl+2", show_textures_window)) {
 		show_textures_window = !show_textures_window;
 	}
 	ImGui::Separator();
-	if (ImGui::MenuItem("Camera", io.OSXBehaviors ? "Cmd+3" : "Ctrl+3", show_textures_window)) {
+	if (ImGui::MenuItem("Camera", io.OptMacOSXBehaviors ? "Cmd+3" : "Ctrl+3", show_textures_window)) {
 		show_camera_window = !show_camera_window;
 	}
 	ImGui::Separator();
-	if (ImGui::MenuItem("Source editor", io.OSXBehaviors ? "Cmd+4" : "Ctrl+4", show_src_edit_window)) {
+	if (ImGui::MenuItem("Source editor", io.OptMacOSXBehaviors ? "Cmd+4" : "Ctrl+4", show_src_edit_window)) {
 		show_src_edit_window = !show_src_edit_window;
 	}
 	ImGui::EndMenu();
