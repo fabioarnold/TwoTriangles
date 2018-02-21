@@ -149,8 +149,9 @@ void windowSizeCallback(GLFWwindow* window, int width, int height) {
 	loop(0.0f);
 }
 
+// TODO: multi monitor fullscreen
 void windowToggleFullscreen() {
-	GLFWmonitor *m = glfwGetPrimaryMonitor();
+	GLFWmonitor *m = glfwGetPrimaryMonitor(); // TODO: get monitor on which the window is currently located
 	const GLFWvidmode *v = glfwGetVideoMode(m); // desktop
 	if (!windowIsFullscreen()) { // enter
 		// save window size for restore
@@ -159,7 +160,8 @@ void windowToggleFullscreen() {
 			0, 0, v->width, v->height,
 			/*refresh_rate*/GLFW_DONT_CARE);
 	} else { // exit
-		// center TODO: restore window position?
+		// TODO: restore window position
+		// for now center window
 		int cx = (v->width - app->window_width) / 2;
 		int cy = (v->height - app->window_height) / 2;
 		glfwSetWindowMonitor(glfw_window, nullptr,
@@ -283,10 +285,16 @@ int main(void) {
 	double glfw_time_old = glfwGetTime();
 	while (!glfwWindowShouldClose(glfw_window) && !app->quit)
 	{
-		glfwPollEvents();
-		double glfw_time = glfwGetTime();
-		loop(glfw_time - glfw_time_old);
-		glfw_time_old = glfw_time;
+		if (glfwGetWindowAttrib(glfw_window, GLFW_ICONIFIED)) {
+			glfwWaitEvents();
+		} else {
+			glfwPollEvents();
+			double glfw_time = glfwGetTime();
+			double delta_time = glfw_time - glfw_time_old;
+			glfw_time_old = glfw_time;
+			if (delta_time > 1.0/30.0) delta_time = 1.0/30.0;
+			loop(delta_time);
+		}
 	}
 
 	destroy();
