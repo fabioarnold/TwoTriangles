@@ -95,54 +95,49 @@ void scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
 
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	ImGui_ImplGlfwGL2_KeyCallback(window, key, scancode, action, mods);
-
 	ImGuiIO& io = ImGui::GetIO();
 
-	if (!io.WantCaptureKeyboard) {
-		if (key == GLFW_KEY_ESCAPE) {
-			app->toggleAnimation();
-		}
-	}
-
-	// handle hotkeys
-	bool ctrl_key_down = io.OptMacOSXBehaviors ? io.KeySuper : io.KeyCtrl;
-	bool shift_key_down = io.KeyShift;
-	if (ctrl_key_down) {
+	if (action == GLFW_PRESS) {
+		// handle hotkeys
+		bool ctrl_key_down = io.OptMacOSXBehaviors ? io.KeySuper : io.KeyCtrl;
+		bool shift_key_down = io.KeyShift;
 		switch (key) {
 			case GLFW_KEY_1: case GLFW_KEY_2: case GLFW_KEY_3: case GLFW_KEY_4:
-				app->toggleWindow(key-GLFW_KEY_1);
+				if (ctrl_key_down) app->toggleWindow(key-GLFW_KEY_1);
 				break;
 			case GLFW_KEY_B: // build / compile
-				app->recompileShader();
+				if (ctrl_key_down) app->recompileShader();
 				break;
 			case GLFW_KEY_F: // fullscreen
-				windowToggleFullscreen();
+				if (ctrl_key_down) windowToggleFullscreen();
 				break;
 			case GLFW_KEY_H: // hide gui
-				if (!io.OptMacOSXBehaviors || shift_key_down) app->hide_gui = !app->hide_gui; // toggle imgui
+				if (ctrl_key_down && (!io.OptMacOSXBehaviors || shift_key_down)) app->hide_gui = !app->hide_gui; // toggle imgui
 				break;
 			case GLFW_KEY_N: // new
-				app->newShader();
+				if (ctrl_key_down) app->newShader();
 				break;
 			case GLFW_KEY_O: // open
-				app->openShaderDialog();
+				if (ctrl_key_down) app->openShaderDialog();
 				break;
 			case GLFW_KEY_Q: // quit
-				app->quit = true;
+				if (ctrl_key_down) app->quit = true;
 				break;
 			case GLFW_KEY_S: // save
-				if (shift_key_down) app->saveShaderDialog();
-				else app->saveShader();
+				if (ctrl_key_down) {
+					if (shift_key_down) app->saveShaderDialog();
+					else app->saveShader();
+				}
+				break;
+			case GLFW_KEY_SPACE:
+				if (!io.WantCaptureKeyboard) app->toggleAnimation();
+				break;
+			case GLFW_KEY_F11:
+				windowToggleFullscreen();
 				break;
 			default: break;
 		}
 	}
-	if (key == GLFW_KEY_F11) {
-		windowToggleFullscreen();
-	}
-	
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
 void charCallback(GLFWwindow *window, unsigned int c) {
@@ -158,8 +153,8 @@ void windowToggleFullscreen() {
 	int window_width, window_height;
 	glfwGetWindowSize(glfw_window, &window_width, &window_height);
 	if (!windowIsFullscreen()) {
-		glfwSetWindowMonitor(glfw_window,
-			glfwGetPrimaryMonitor(),
+		GLFWmonitor *m = glfwGetPrimaryMonitor();
+		glfwSetWindowMonitor(glfw_window, m,
 			GLFW_DONT_CARE, GLFW_DONT_CARE,
 			window_width, window_height,
 			GLFW_DONT_CARE);
@@ -203,6 +198,27 @@ void destroy() {
 
 void loop(float delta_time) {
 	ImGui_ImplGlfwGL2_NewFrame();
+	ImGuiIO &io = ImGui::GetIO();
+
+	// camera input
+	if (!io.WantCaptureKeyboard || app->hide_gui) {
+		// TODO: abstract keyboard input
+		app->movement_command.move = v3(
+			- (glfwGetKey(glfw_window, GLFW_KEY_A) == GLFW_PRESS ? 1.0f : 0.0f)
+			+ (glfwGetKey(glfw_window, GLFW_KEY_D) == GLFW_PRESS ? 1.0f : 0.0f),
+			- (glfwGetKey(glfw_window, GLFW_KEY_Q) == GLFW_PRESS ? 1.0f : 0.0f)
+			+ (glfwGetKey(glfw_window, GLFW_KEY_E) == GLFW_PRESS ? 1.0f : 0.0f),
+			- (glfwGetKey(glfw_window, GLFW_KEY_W) == GLFW_PRESS ? 1.0f : 0.0f)
+			+ (glfwGetKey(glfw_window, GLFW_KEY_S) == GLFW_PRESS ? 1.0f : 0.0f));
+		app->movement_command.rotate = v2(
+			- (glfwGetKey(glfw_window, GLFW_KEY_UP   ) == GLFW_PRESS ? 1.0f : 0.0f)
+			+ (glfwGetKey(glfw_window, GLFW_KEY_DOWN ) == GLFW_PRESS ? 1.0f : 0.0f),
+			- (glfwGetKey(glfw_window, GLFW_KEY_LEFT ) == GLFW_PRESS ? 1.0f : 0.0f)
+			+ (glfwGetKey(glfw_window, GLFW_KEY_RIGHT) == GLFW_PRESS ? 1.0f : 0.0f));
+	} else {
+		app->movement_command.move = v3(0.0f);
+		app->movement_command.rotate = v2(0.0f);
+	}
 
 	int width, height;
 	glfwGetFramebufferSize(glfw_window, &width, &height);
