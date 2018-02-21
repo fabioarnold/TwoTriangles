@@ -223,9 +223,15 @@ void loop(float delta_time) {
 
 	glfwSetInputMode(glfw_window, GLFW_CURSOR, app->hide_gui ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
 
-	int width, height;
-	glfwGetFramebufferSize(glfw_window, &width, &height);
-	glViewport(0, 0, width, height);
+	int window_width, window_height;
+	glfwGetWindowSize(glfw_window, &window_width, &window_height);
+	int frame_width, frame_height;
+	glfwGetFramebufferSize(glfw_window, &frame_width, &frame_height);
+	app->video.width = window_width;
+	app->video.height = window_height;
+	app->video.pixel_scale = (float)frame_width / (float)window_width; // just assume it's the same for height
+
+	glViewport(0, 0, frame_width, frame_height);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	app->update(delta_time);
