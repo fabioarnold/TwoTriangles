@@ -150,20 +150,21 @@ void windowSizeCallback(GLFWwindow* window, int width, int height) {
 }
 
 void windowToggleFullscreen() {
-	int window_width, window_height;
-	glfwGetWindowSize(glfw_window, &window_width, &window_height);
-	if (!windowIsFullscreen()) {
-		GLFWmonitor *m = glfwGetPrimaryMonitor();
+	GLFWmonitor *m = glfwGetPrimaryMonitor();
+	const GLFWvidmode *v = glfwGetVideoMode(m); // desktop
+	if (!windowIsFullscreen()) { // enter
+		// save window size for restore
+		glfwGetWindowSize(glfw_window, &app->window_width, &app->window_height);
 		glfwSetWindowMonitor(glfw_window, m,
-			GLFW_DONT_CARE, GLFW_DONT_CARE,
-			window_width, window_height,
-			GLFW_DONT_CARE);
-	} else {
-		glfwSetWindowMonitor(glfw_window,
-			nullptr,
-			GLFW_DONT_CARE, GLFW_DONT_CARE,
-			window_width, window_height,
-			GLFW_DONT_CARE);
+			0, 0, v->width, v->height,
+			/*refresh_rate*/GLFW_DONT_CARE);
+	} else { // exit
+		// center TODO: restore window position?
+		int cx = (v->width - app->window_width) / 2;
+		int cy = (v->height - app->window_height) / 2;
+		glfwSetWindowMonitor(glfw_window, nullptr,
+			cx, cy, app->window_width, app->window_height,
+			/*refresh_rate*/GLFW_DONT_CARE);
 	}
 }
 
@@ -176,7 +177,8 @@ void init(VideoMode *video) {
 	if (!glfwInit()) exit(EXIT_FAILURE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	glfw_window = glfwCreateWindow(video->width, video->height, WINDOW_TITLE, NULL, NULL);
+	GLFWmonitor *monitor = video->fullscreen ? glfwGetPrimaryMonitor() : nullptr;
+	glfw_window = glfwCreateWindow(video->width, video->height, WINDOW_TITLE, monitor, nullptr);
 	if (!glfw_window) {
 		glfwTerminate();
 		exit(EXIT_FAILURE);
@@ -223,13 +225,10 @@ void loop(float delta_time) {
 
 	glfwSetInputMode(glfw_window, GLFW_CURSOR, app->hide_gui ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
 
-	int window_width, window_height;
-	glfwGetWindowSize(glfw_window, &window_width, &window_height);
+	glfwGetWindowSize(glfw_window, &app->video.width, &app->video.height);
 	int frame_width, frame_height;
 	glfwGetFramebufferSize(glfw_window, &frame_width, &frame_height);
-	app->video.width = window_width;
-	app->video.height = window_height;
-	app->video.pixel_scale = (float)frame_width / (float)window_width; // just assume it's the same for height
+	app->video.pixel_scale = (float)frame_width / (float)app->video.width; // just assume it's the same for height
 
 	glViewport(0, 0, frame_width, frame_height);
 	glClear(GL_COLOR_BUFFER_BIT);

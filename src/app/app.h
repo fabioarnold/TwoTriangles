@@ -16,6 +16,7 @@ struct App {
 	bool quit = false;
 	bool hide_gui = false;
 	VideoMode video;
+	int window_width, window_height; // restore to these when exiting fullscreen
 	vec3 camera_location;
 	vec3 camera_euler_angles;
 

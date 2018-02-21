@@ -346,10 +346,12 @@ void App::readSession() {
 
 	char *recently_used_str = nullptr; // "filepath0","filepath1","filepath2"
 	IniVar session_vars[] = {
-		{"recently_used", INI_VAR_STRING, &recently_used_str},
-		{"video_width", INI_VAR_INT, &video.width},
+		{ "recently_used", INI_VAR_STRING, &recently_used_str },
+		{ "video_width", INI_VAR_INT, &video.width },
 		{ "video_height", INI_VAR_INT, &video.height },
 		{ "video_fullscreen", INI_VAR_INT, &video.fullscreen },
+		{ "window_width", INI_VAR_INT, &window_width },
+		{ "window_height", INI_VAR_INT, &window_height }
 	};
 	parseIniString(session_str, session_vars, ARRAY_COUNT(session_vars));
 
@@ -401,6 +403,8 @@ void App::writeSession() {
 	fprintf(file, "video_width=%d\n", video.width);
 	fprintf(file, "video_height=%d\n", video.height);
 	fprintf(file, "video_fullscreen=%d\n", video.fullscreen);
+	fprintf(file, "window_width=%d\n", window_width);
+	fprintf(file, "window_height=%d\n", window_height);
 
 	fclose(file);
 }
