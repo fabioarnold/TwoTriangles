@@ -210,6 +210,7 @@ void loop(float delta_time) {
 			+ (glfwGetKey(glfw_window, GLFW_KEY_E) == GLFW_PRESS ? 1.0f : 0.0f),
 			- (glfwGetKey(glfw_window, GLFW_KEY_W) == GLFW_PRESS ? 1.0f : 0.0f)
 			+ (glfwGetKey(glfw_window, GLFW_KEY_S) == GLFW_PRESS ? 1.0f : 0.0f));
+		// TODO: mouse look
 		app->movement_command.rotate = v2(
 			- (glfwGetKey(glfw_window, GLFW_KEY_UP   ) == GLFW_PRESS ? 1.0f : 0.0f)
 			+ (glfwGetKey(glfw_window, GLFW_KEY_DOWN ) == GLFW_PRESS ? 1.0f : 0.0f),
@@ -219,6 +220,8 @@ void loop(float delta_time) {
 		app->movement_command.move = v3(0.0f);
 		app->movement_command.rotate = v2(0.0f);
 	}
+
+	glfwSetInputMode(glfw_window, GLFW_CURSOR, app->hide_gui ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
 
 	int width, height;
 	glfwGetFramebufferSize(glfw_window, &width, &height);
