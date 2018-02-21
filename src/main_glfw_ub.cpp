@@ -85,7 +85,17 @@ void errorCallback(int error, const char* description) {
 	LOGE("Error: %s", description);
 }
 
-void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void mouseCallback(GLFWwindow *window, int button, int action, int mods) {
+	ImGui_ImplGlfwGL2_MouseButtonCallback(window, button, action, mods);
+}
+
+void scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
+	ImGui_ImplGlfwGL2_ScrollCallback(window, xoffset, yoffset);
+}
+
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+	ImGui_ImplGlfwGL2_KeyCallback(window, key, scancode, action, mods);
+
 	ImGuiIO& io = ImGui::GetIO();
 
 	if (!io.WantCaptureKeyboard) {
@@ -135,6 +145,10 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
+void charCallback(GLFWwindow *window, unsigned int c) {
+	ImGui_ImplGlfwGL2_CharCallback(window, c);
+}
+
 void loop(float delta_time);
 void windowSizeCallback(GLFWwindow* window, int width, int height) {
 	loop(0.0f);
@@ -172,7 +186,10 @@ void init(VideoMode *video) {
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
+	glfwSetMouseButtonCallback(glfw_window, mouseCallback);
+	glfwSetScrollCallback(glfw_window, scrollCallback);
 	glfwSetKeyCallback(glfw_window, keyCallback);
+	glfwSetCharCallback(glfw_window, charCallback);
 	glfwSetWindowSizeCallback(glfw_window, windowSizeCallback);
 	glfwMakeContextCurrent(glfw_window);
 	//gladLoadGLLoader((GLADloadproc) glfwGetProcAddress); // glew
@@ -234,7 +251,7 @@ int main(void) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	ImGui_ImplGlfwGL2_Init(glfw_window, /*install_callbacks*/true);
+	ImGui_ImplGlfwGL2_Init(glfw_window, /*install_callbacks*/false);
 	ImGui::StyleColorsDark();
 
 	app->init();
