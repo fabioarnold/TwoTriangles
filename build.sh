@@ -12,20 +12,22 @@ if [[ $1 = "clean" ]]; then
 	exit 0
 fi
 
+CFLAGS="$CFLAGS -std=c++11"
 DEBUG_FLAGS="-Wall -O0 -g -DDEBUG"
 RELEASE_FLAGS="-Os"
-if [[ $1 = "release" ]]; then
-	CFLAGS="$CFLAGS -std=c++11 $RELEASE_FLAGS"
-else
-	CFLAGS="$CFLAGS -std=c++11 $DEBUG_FLAGS"
-fi
-LDFLAGS="-Lbuild"
+LDFLAGS="$LDFLAGS -Lbuild"
 
 # gamelib
 INCLUDE_DIRS="-Ilib/gamelib/src"
 
 # GLFW
-LIB_GLFW="`pkg-config --libs glfw3`"
+pushd lib/glfw/build
+make
+EXIT_STATUS=$?
+popd > /dev/null
+if [[ $EXIT_STATUS != 0 ]]; then exit $EXIT_STATUS; fi
+INCLUDE_DIRS="$INCLUDE_DIRS -Ilib/glfw/include"
+LIB_GLFW="-Llib/glfw/build/src -lglfw3" # `pkg-config --static --libs glfw3`
 
 # OpenGL and Windowing
 LIB_OPENGL="-lGL -lGLEW"
@@ -51,6 +53,9 @@ if [ ! -f lib/nativefiledialog/src/libnfd.a ]; then
 	popd > /dev/null
 fi
 
+# noc
+INCLUDE_DIRS="$INCLUDE_DIRS -Ilib/noc"
+
 # stb_image
 INCLUDE_DIRS="$INCLUDE_DIRS -Ilib/stb"
 LIB_STB_IMAGE="-lstb_image"
@@ -66,14 +71,21 @@ fi
 # platform specific flags
 if [[ $OS_NAME = "Darwin" ]]; then
 	LIB_OPENGL="-framework OpenGL -framework Cocoa"
+	LIB_GLFW="$LIB_GLFW -framework IOKit -framework CoreFoundation -framework CoreVideo"
 	LIB_NFD="$LIB_NFD -framework AppKit"
 elif [[ $OS_NAME = "Linux" ]]; then
 	CFLAGS="$CFLAGS -DLINUX_DESKTOP"
 	LIB_NFD="$LIB_NFD `pkg-config --cflags --libs gtk+-3.0`"
 fi
 
+if [[ $1 = "release" ]]; then
+	CFLAGS="$CFLAGS $RELEASE_FLAGS"
+else
+	CFLAGS="$CFLAGS $DEBUG_FLAGS"
+fi
+
 # final compiler flags
-CFLAGS="$CFLAGS `pkg-config --cflags glfw3` $INCLUDE_DIRS"
+CFLAGS="$CFLAGS $INCLUDE_DIRS"
 LDFLAGS="$LDFLAGS $LIB_GLFW $LIB_OPENGL $LIB_IMGUI $LIB_NFD $LIB_STB_IMAGE"
 
 mkdir -p build

@@ -200,7 +200,11 @@ void destroy() {
 	glfwTerminate();
 }
 
+bool in_loop = false; // prevent nesting
 void loop(float delta_time) {
+	if (in_loop) return;
+	in_loop = true;
+
 	ImGui_ImplGlfwGL2_NewFrame();
 	ImGuiIO &io = ImGui::GetIO();
 
@@ -238,9 +242,10 @@ void loop(float delta_time) {
 	app->update(delta_time);
 
 	ImGui::Render();
-	ImGui_ImplGlfwGL2_RenderDrawData(ImGui::GetDrawData());
 
 	glfwSwapBuffers(glfw_window);
+
+	in_loop = false;
 }
 
 int main(void) {

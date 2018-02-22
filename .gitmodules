@@ -13,3 +13,6 @@
 [submodule "lib/noc"]
 	path = lib/noc
 	url = https://github.com/guillaumechereau/noc
+[submodule "lib/glfw"]
+	path = lib/glfw
+	url = https://github.com/fabioarnold/glfw

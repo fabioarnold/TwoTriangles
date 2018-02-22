@@ -3,7 +3,7 @@ TARGET=libstb_image.a
 UNITYBUILD_CPP_FILE="lib/gamelib/third_party/stb/stb_image.cpp"
 INCLUDE_DIRS="-Ilib/stb"
 DEBUG_FLAGS="-O0 -g"
-RELEASE_FLAGS="-O2"
+RELEASE_FLAGS="-Os"
 CFLAGS="$CFLAGS $INCLUDE_DIRS $RELEASE_FLAGS"
 
 mkdir -p build

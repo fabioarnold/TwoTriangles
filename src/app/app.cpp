@@ -428,7 +428,9 @@ void App::newShader() {
 	recompileShader();
 }
 
+//#include "noc_file_dialog.h"
 void App::openShaderDialog() {
+#if true
 	char *out_filepath = nullptr;
 	nfdresult_t result = NFD_OpenDialog("frag,glsl,fsh,txt", nullptr, &out_filepath);
 	
@@ -440,6 +442,16 @@ void App::openShaderDialog() {
 		}
 		free(out_filepath);
 	}
+#else // noc
+	char *filepath = noc_file_dialog_open(NOC_FILE_DIALOG_OPEN, "frag\0glsl\0fsh\0txt", nullptr, nullptr);
+	if (filepath) {
+		struct stat attr;
+		if (!stat(filepath, &attr)) { // file exists
+			shader_file_mtime = (int)attr.st_mtime;
+			loadShader(filepath);
+		}
+	}
+#endif
 }
 
 void App::saveShaderDialog() {

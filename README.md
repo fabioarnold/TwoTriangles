@@ -27,18 +27,19 @@ You can obtain a package from the AUR: https://aur.archlinux.org/packages/twotri
 #### Windows
 You need [Visual Studio 2017](https://www.visualstudio.com).
 
-#### OS X
+#### macOS
 Assuming you already have Xcode installed, install dependencies using [Homebrew](http://brew.sh):
 
 ```
-$ brew install scons pkg-config sdl2
+$ brew install scons pkg-config
+$ brew install  --without-shared-library glfw
 ```
 
 #### Arch Linux
 Install dependencies using pacman:
 
 ```
-# pacman -S base-devel scons pkg-config glew sdl2
+# pacman -S base-devel scons pkg-config glew glfw
 ```
 
 ### Get the code
